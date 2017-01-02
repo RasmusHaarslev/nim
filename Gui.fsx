@@ -18,11 +18,11 @@ module Gui
     // Add the buttons/text fields in the bottom of the screen.
     let newGameButton =
       new Button(Location = Point(30,420), MinimumSize=Size(100,50),
-                  MaximumSize = Size(100,50),Text = "New Game")
+                 MaximumSize = Size(100,50),Text = "New Game")
 
     let makeDrawButton =
       new Button(Location = Point(380,420), MinimumSize=Size(100,50),
-                  MaximumSize = Size(100,50),Text = "Draw!")
+                 MaximumSize = Size(100,50),Text = "Draw!")
 
     let chooseMatches = 
       new TextBox(Location = Point(150,420),Size = Size(200,25))
@@ -32,6 +32,8 @@ module Gui
      * that we can correctly track the heap selected by the heap.
      *)
     let mutable heapList = []
+    let mutable selectedHeap        = -1
+    let mutable selectedNumMatches  = -1
     (* Given a list of integers of size n,
      * creates n radiobuttons.
      * The integers in the list is used as label for each button.
@@ -40,21 +42,20 @@ module Gui
      *)
     let populateHeapPanel heaps =
         printfn "Populating panel with %d heaps" (List.length heaps)
-        let rec inner heaps yPos cnt = 
+        let rec inner heaps yPos count = 
             match heaps with
             | []        -> ()
             | x::xs     ->
                 let rad = new RadioButton(Text=x.ToString(),Top=yPos,Left=30)
-
                 let radioSelectHandler event =
-                    printfn "Selected heap nr: %A" cnt
-                    AsyncEventQueue.ev.Post (AsyncEventQueue.SelectHeap cnt)
+                    printfn "Selected heap nr: %A" count
+                    selectedHeap <- count
+                    AsyncEventQueue.ev.Post (AsyncEventQueue.SelectHeap count)
 
                 rad.Click.Add(radioSelectHandler)
-                heapList <- heapList @ [(rad, cnt)]
-                //radioBox.Controls.Add rad
+                heapList <- heapList @ [(rad, count)]
                 heapPanel.Controls.Add rad
-                inner xs (yPos + 20) (cnt + 1)
+                inner xs (yPos + 20) (count + 1)
 
         in            
             inner heaps 0 0
@@ -70,14 +71,10 @@ module Gui
             heapPanel.Controls.RemoveAt(0)
         ()
 
-
-
     // Add all the items.
     mainWindow.Controls.Add newGameButton
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
-    //mainWindow.Controls.Add radioBox
-
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
@@ -97,16 +94,6 @@ module Gui
      *)
     let makeDrawHandler _ =
         printfn "Clicked drawButton"
-        
-        let rec getSelectedHeap (hl : (RadioButton * int) list)=
-            match hl with
-            | []    -> -1
-            | x::xs -> 
-                if (fst x).Checked then
-                    (snd x)
-                else
-                    getSelectedHeap xs
-        let chosenHeap = getSelectedHeap heapList
         let numMatches = 
             try
                 int chooseMatches.Text
@@ -115,31 +102,39 @@ module Gui
                     printfn "Could not parse integer: %s" chooseMatches.Text
                     -1
 
-        chosenHeap |> printfn "%A"
-        numMatches  |> printfn "%A"
+        printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
+        //numMatches  |> printfn "%A"
 
-        match chosenHeap,numMatches with
+        match selectedHeap,numMatches with
             | -1,_       -> AsyncEventQueue.ev.Post AsyncEventQueue.Error
             | _,-1       -> AsyncEventQueue.ev.Post AsyncEventQueue.Error
-            | _,_        -> AsyncEventQueue.ev.Post (Move (chosenHeap, numMatches))
-
-        
-
+            | _,_        -> AsyncEventQueue.ev.Post (Move (selectedHeap, numMatches))
 
     makeDrawButton.Click.Add(makeDrawHandler)
-        // Add draw event to eventQueue
-        // What instance of eventQueue am I using here?
-        // Should I verify user input here? (The more the better? :)
+
+    (* handlerFunction for the text field to choose matchNum
+     * Error handling at this point is annoying. I suggest we don't!
+     * If the users change can't be parsed as int, we set selected amount of 
+     * matches to -1, so that we raise an error later.
+     * 
+     * MAYBE NO ERROR HANDLING SHOULD BE DONE IN THIS FILE? Need discussion.
+     *
+     * fun type: System.EventArgs -> unit
+     *)
+    let chooseMatchesHandler _ =
+        // Not sure if I should add event to queue here.
+        // This will be more clear when we make the automaton I think.
+        selectedNumMatches <- 
+            try
+                int chooseMatches.Text
+            with
+                | _ as d -> 
+                    printfn "Could not parse integer: %s" chooseMatches.Text
+                    -1        
+        printfn "Changed match choice to: %d" selectedNumMatches
+    chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
     
-    //heapPanel.Controls.RemoveAt(0)
-
-    heapPanel.HasChildren |> printfn "%A"
-
-    heapPanel.HasChildren |> printfn "%A"
-
+    
 
     mainWindow.Controls.Add heapPanel
-
-
-    

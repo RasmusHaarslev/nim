@@ -1,7 +1,12 @@
 module GameController
+    
+    #load "AsyncEventQueue.fsx"
+    #load "Gui.fsx"
+
+    open Gui
+    open AsyncEventQueue
 
     let rand = System.Random()
-
     type GameState = {
         TurnBit: int;
         Heap: int list;
@@ -15,6 +20,18 @@ module GameController
         SelectedHeap = 0;
         RemoveCount = 1
     }
+
+    let rec ready() =
+        async {
+            Gui.populateHeapPanel gameState.Heap
+
+            let! msg = AsyncEventQueue.ev.Receive()
+            match msg with
+                | Move (a,b)    -> printfn "Moved with: (%d,%d)" a b
+                | SelectHeap a  -> printfn "Selected Heap: %d" a
+                | Error         -> printfn "Error"
+                | _             -> failwith "hallelujah"
+        }
 
     //let newGameState =
     //    let gameState = {
