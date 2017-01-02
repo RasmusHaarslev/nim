@@ -13,6 +13,7 @@ module Gui
     let heapPanel = new Panel(Size=Size(500,390),Top=10,Left=10)
     heapPanel.AutoScroll <- true
     heapPanel.BackColor <- Color.LightGray
+    let radioBox = new GroupBox(Size=Size(500,390),Top=10,Left=10)
 
     // Add the buttons/text fields in the bottom of the screen.
     let newGameButton =
@@ -44,7 +45,15 @@ module Gui
             | []        -> ()
             | x::xs     ->
                 let rad = new RadioButton(Text=x.ToString(),Top=yPos,Left=30)
+
+                let radioSelectHandler event =
+                    printfn "Selected heap nr: %A" cnt
+                    AsyncEventQueue.ev.Post (AsyncEventQueue.SelectHeap cnt)
+
+                rad.Click.Add(radioSelectHandler)
                 heapList <- heapList @ [(rad, cnt)]
+                //radioBox.Controls.Add rad
+                heapPanel.Controls.Add rad
                 inner xs (yPos + 20) (cnt + 1)
 
         in            
@@ -67,6 +76,8 @@ module Gui
     mainWindow.Controls.Add newGameButton
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
+    //mainWindow.Controls.Add radioBox
+
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
