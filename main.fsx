@@ -10,6 +10,7 @@ open Ai
 open Gui
 
 
+<<<<<<< HEAD
 [<EntryPoint>]
 [<STAThread>]
 let main argv =
@@ -23,3 +24,7 @@ let main argv =
     Application.Run(Gui.radiobuttonform);
 
     0
+=======
+Application.Run(Gui.mainWindow);
+
+>>>>>>> 9ec2c836f074e5f17ba4ed64adc57ebbe6f6fc83
