@@ -14,6 +14,5 @@ open Gui
 
 Gui.populateHeapPanel [222;23234;1111;23;5]
 
-Gui.clearHeapPanel
 
 Application.Run(Gui.mainWindow);
