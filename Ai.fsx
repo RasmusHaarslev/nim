@@ -2,7 +2,7 @@ module Ai
     #load "AsyncEventQueue.fsx"
     open AsyncEventQueue
 
-    // 
+    //
     let rec findm heap =
         match heap with
         | [] -> 0
@@ -27,13 +27,15 @@ module Ai
         |> fst
 
     let aiMove heap =
+        printfn "hej"
         let m = findm heap
+        printfn "%A" m
 
         if m = 0 then
             let largestHeapIdx = maxIndexBy heap
             in
-                printf "Apply move (%d, 1)" largestHeapIdx
+                printfn "Apply move (%A, 1)" largestHeapIdx
         else
             let (heapIdx, removeCount) = findMove heap m
             in
-                printf "Apply move (%d, %d)" heapIdx removeCount
+                printfn "Apply move (%A, %A)" heapIdx removeCount
