@@ -8,14 +8,5 @@ open AsyncEventQueue
 open Gui
 
 
-[<EntryPoint>]
-[<STAThread>]
-let main argv = 
- 
-    Application.EnableVisualStyles()
-    Application.SetCompatibleTextRenderingDefault false
- 
- 
-    Application.Run(Gui.radiobuttonform);
- 
-    0 
+Application.Run(Gui.mainWindow);
+
