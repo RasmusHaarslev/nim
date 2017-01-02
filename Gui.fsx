@@ -12,32 +12,29 @@ module Gui
     heapPanel.AutoScroll <- true
     heapPanel.BackColor <- Color.Gray
 
-    // This is sort of temporary. We need to add radiobuttons,
-    // dynamically, based on the amount of heaps.
-    // This loops adds radiobuttons to the panel we made  before.
-    //let mutable i = 20
-    //while i < 20*30 do
-    //    let rad = new RadioButton(Text=i.ToString(),Top=i,Left=30)
-    //    heapPanel.Controls.Add rad
-    //    i <- i + 20
-
     // Add the buttons/text fields in the bottom of the screen.
     let newGameButton =
-      new Button(Location=Point(30,420), MinimumSize=Size(100,50),
-                  MaximumSize=Size(100,50),Text="New Game")
+      new Button(Location = Point(30,420), MinimumSize=Size(100,50),
+                  MaximumSize = Size(100,50),Text = "New Game")
 
     let makeDrawButton =
-      new Button(Location=Point(380,420), MinimumSize=Size(100,50),
-                  MaximumSize=Size(100,50),Text="Draw!")
+      new Button(Location = Point(380,420), MinimumSize=Size(100,50),
+                  MaximumSize = Size(100,50),Text = "Draw!")
 
     let chooseMatches = 
-      new TextBox(Location=Point(150,420),Size=Size(200,25))
+      new TextBox(Location = Point(150,420),Size = Size(200,25))
 
+    let mutable numHeaps = 0
 
     let populateHeapPanel heaps =
+
         //let mutable i = 1
         //let heapNum = List.length heaps
         //while i <= heapNum do
+
+        numHeaps <- (List.length heaps)
+        printfn "Here"
+        printfn "%A" numHeaps
         let rec inner heaps yPos = 
             match heaps with
             | []        -> ()
@@ -46,9 +43,19 @@ module Gui
                 heapPanel.Controls.Add rad
                 inner xs (yPos + 20)
 
-        in
+        in            
             inner heaps 0
             
+    let clearHeapPanel =
+        printfn "Removing"
+        numHeaps |> printfn "%A" 
+        let mutable i = 0
+        while i < numHeaps do
+            heapPanel.Controls.RemoveAt(i)
+            i <- i + 1
+
+        numHeaps <- 0
+        ()
 
 
     // Add all the items.
@@ -56,8 +63,15 @@ module Gui
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
 
-    populateHeapPanel [222;23234;1111;23;5]
+    
+    //heapPanel.Controls.RemoveAt(0)
+
+    heapPanel.HasChildren |> printfn "%A"
+
+    heapPanel.HasChildren |> printfn "%A"
+
 
     mainWindow.Controls.Add heapPanel
+
 
     
