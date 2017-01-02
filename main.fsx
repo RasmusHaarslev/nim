@@ -9,4 +9,3 @@ open Gui
 
 
 Application.Run(Gui.mainWindow);
-
