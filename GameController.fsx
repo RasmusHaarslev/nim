@@ -127,4 +127,3 @@ module GameController
             else printfn "Player 1 has won!"
             //Gui.win gameState
             return! menu()
-        }
