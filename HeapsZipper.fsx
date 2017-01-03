@@ -86,7 +86,9 @@ let subtract i j xs =
 
     initHeapZipper prev (Heap.subtract j x) remaining
 
-
+let toList (HeapZipper (prev, x, remaining)) =                                             
+        Heaps.cons remaining x                                                  
+                |> Heaps.merge prev 
 
 
 let myheapsses = Heaps.heapsFromListofHeap [Heap.init 4; Heap.init 3; Heap.init 2]
