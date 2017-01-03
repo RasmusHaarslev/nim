@@ -130,7 +130,19 @@ let heapsFromListofHeap xs =
     List.fold cons EmptyHeaps xs
 
 
+    // cons                                                                                           
+let consInt xs x =                                                          
+    LinkedHeaps (Heap.init x, xs)                                           
+                                                                                
+let heapsFromListofInt xs =                                                 
+    List.fold consInt EmptyHeaps xs                                         
+                                   
 
+let rec toList xs =                                                                               
+        match xs with                                                           
+                | EmptyHeaps -> []                                                  
+                | LinkedHeaps (h, tl) ->                                            
+                         (toInt h) :: (toList tl)  
 
 let print xs =
   printfn "%A" xs

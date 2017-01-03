@@ -25,7 +25,7 @@ module AsyncEventQueue
                 tryListen cont)
 
     // An enumeration of the possible events
-    type Message = | Move of int*int | Error | SelectHeap of int
+    type Message = | Move of int*int | Error | SelectHeap of int | NewGame | NewAiGame | Clear
     // Defining an insatnce here works, but we should investigate if there's
     // a cool way of doing singletons!!
-    let (ev: AsyncEventQueue<Message>) = AsyncEventQueue()
+    let (instance: AsyncEventQueue<Message>) = AsyncEventQueue()
