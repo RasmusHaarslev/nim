@@ -1,8 +1,6 @@
-#load "Heaps.fs"
-#load "Heap.fs"
+#load "Heaps.fsx"
 
 open Heaps
-open Heap
 
 (*
 (*
@@ -40,30 +38,112 @@ let initialState =
 
 
 // back
+*)
+
+
+
 
 type HeapZipper =
-    | HeapZipper of Heaps * Heap * Heaps
+    | HeapZipper of Heaps.Heaps * Heap.Heap * Heaps.Heaps
 
 //forward : heapZipper -> heapZipper
 let forward = function
-    // jeg må nok ikke skrive LinkedHeaps her
-    | HeapZipper (prev, x, LinkedHeaps (hd, tl)) ->
-        printfn "%A" prev
-        HeapZipper (prev, Heap.init 2, tl)
+    | HeapZipper (prev, x, remaining) when not (Heaps.isEmpty remaining) ->
+        HeapZipper (Heaps.cons prev x, Heaps.hd remaining, Heaps.tl remaining)
     | x -> x
 
 
+let backward = function
+    | HeapZipper (prev, x, remaining) when not (Heaps.isEmpty prev) ->
+        HeapZipper (Heaps.tl prev, Heaps.hd prev, Heaps.cons remaining x)
+    | x -> x
+
+
+let initHeapZipper prev x remaining =
+    HeapZipper (prev, x, remaining)
+
+
+let rec goToBeginning xs =
+    match xs with
+        | HeapZipper (prev, x, remaining) when not (Heaps.isEmpty prev) ->
+            goToBeginning (backward xs)
+        | x -> x
+
+
+let rec moveN n xs =
+    if n > 0 then
+      moveN (n-1) (forward xs)
+    else
+      xs
+
+
+let focus (HeapZipper (_, x, _)) = x
+
+
+
+let subtract i j xs =
+    let (HeapZipper (prev, x, remaining)) = goToBeginning xs |> moveN i
+
+    initHeapZipper prev (Heap.subtract j x) remaining
+
+
+
+
+let myheapsses = Heaps.heapsFromListofHeap [Heap.init 4; Heap.init 3; Heap.init 2]
+
+
+
+initHeapZipper Heaps.empty (Heap.init 1) myheapsses
+  |> print
+  |> moveN 2
+  |> subtract 1 2
+  |> print
+
+
+(*
+initHeapZipper empty (heapinit 1) myheapsses
+  |> print
+  |> moveN 2
+  |> print
 *)
 
-let myheapsses = Heaps.cons Heaps.empty (Heap.init 3)
+(*
+initHeapZipper empty (heapinit 1) myheapsses
+  |> print
+  |> forward
+  |> print
+  |> forward
+  |> print
+  |> forward
+  |> print
+  |> goToBeginning
+  |> print
+*)
 
-printfn "%A" myheapsses
 
 
 
-//HeapZipper (Heaps.empty, Heap.init 3, myheapsses)
-  //|> forward 
-  //|> printfn "%A"
-
+(*
+initHeapZipper empty (heapinit 1) myheapsses
+  |> print
+  |> forward
+  |> print
+  |> forward
+  |> print
+  |> backward
+  |> print
+  |> backward
+  |> print
+  |> backward
+  |> print
+*)
 //heaps --> return all heaps
 //currentHeap --> return current Heap
+
+
+
+
+
+
+
+

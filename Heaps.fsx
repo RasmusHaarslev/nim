@@ -1,54 +1,10 @@
-// der er noget galt med module systemet.
-// i fsharp giver List.head en fejl i andre sprog bruger man maybes mere hvorfor???
-// the most changable parameter should come last
-// SPØRGSMÅL hvor tilladt er det at beytte failwith
-// single case union type HVORFOR?
-// til den her skal der tilføjes hvis den skal kunne tegnes men der er måske ikke nødvendigt
-// da man jo i virkeligheden tager matches..
-type Heap =
-  | Heap of int 
-  // kan måske bruge uint32 https://docs.microsoft.com/en-us/dotnet/articles/fsharp/language-reference/primitive-types
-  // så kan man ikke lave for lille heapinit
-  // og med zipper kan man controllere valget
+#load "Heap.fsx"
 
 
-// empty matches
-let heapempty = 0
-
-/// single Heap
-//husk at ændre navn
-let heapinit n =
-    Heap n
-
-//add n to a Heap
-//skal måske også laves til ad one
-let add n (Heap x) =
-    Heap (x+n)
-
-//subtract n from a Heap
-
-//mulig ide til subtract.... man subtracter kun 1 ad gangeng så kan vi have en type
-// type subtractable =
-//    = isEmpty   -- denne skal måske ikke være der da vi ikke viser empties...
-//    | isOneMatch
-//    | isMoreMatches 2
-//husk du tager altid 1 TING
-//husk du tager altid 1 TING
-//husk du tager altid 1 TING
-
-// JEG MÅ IKKE KUNNE HEAPINIT med -5 fx
-
-let subtract n (Heap x) =
-    Heap (x-n)
-
-
-
-
-
-
+open Heap
 
 type Heaps =
-    | LinkedHeaps of Heap * Heaps
+    | LinkedHeaps of Heap.Heap * Heaps
     | EmptyHeaps
 
 
@@ -181,162 +137,12 @@ let print xs =
   xs
 
 
-(*
+
 empty
-    |> merge (init (heapinit 3))
-    |> merge (init (heapinit 1))
-    |> merge (init (heapinit 2))
+    |> merge (init (Heap.init 3))
+    |> merge (init (Heap.init 1))
+    |> merge (init (Heap.init 2))
     |> print
-    |> subtractFromNth 1 2
-    |> print
-*)
-
-
-
-
-
-
-(*
-(*
-type Status
-    = isEmpty
-    | isOneMatch
-    | isMoreMatches 2
-*)
-// having zero Heaps is now impossible...
-(*
-type State =
-    { previous : Heaps
-    ; current : Heap
-    ; remaining : Heaps
-    ; chosenMatches : int
-    }
-
-
-type HeapsZipper =
-    | HeapsZipper of State
-
-
-let initialState =
-    HeapsZipper
-        { previous = Heaps.empty
-        ; current = Heap.init 3 // må ikke kunne være heap.init 0
-        ; remaining = Heaps.empty
-        ; chosenMatches = 1 // må ikke kunne være 0
-        }
-*)
-
-//printfn "%A" initialState
-
-// init bør tage en state
-
-
-// back
-*)
-
-
-
-
-type HeapZipper =
-    | HeapZipper of Heaps * Heap * Heaps
-
-//forward : heapZipper -> heapZipper
-let forward = function
-    | HeapZipper (prev, x, remaining) when not (isEmpty remaining) ->
-        HeapZipper (cons prev x, hd remaining, tl remaining)
-    | x -> x
-
-
-let backward = function
-    | HeapZipper (prev, x, remaining) when not (isEmpty prev) ->
-        HeapZipper (tl prev, hd prev, cons remaining x)
-    | x -> x
-
-
-let initHeapZipper prev x remaining =
-    HeapZipper (prev, x, remaining)
-
-
-let rec goToBeginning xs =
-    match xs with
-        | HeapZipper (prev, x, remaining) when not (isEmpty prev) ->
-            goToBeginning (backward xs)
-        | x -> x
-
-
-let rec moveN n xs =
-    if n > 0 then
-      moveN (n-1) (forward xs)
-    else
-      xs
-
-
-let focus (HeapZipper (_, x, _)) = x
-
-
-
-//ændrenavn
-let subtractIJ i j xs =
-    let (HeapZipper (prev, x, remaining)) = goToBeginning xs |> moveN i
-
-    initHeapZipper prev (subtract j x) remaining
-
-
-
-
-let myheapsses = heapsFromListofHeap [heapinit 4; heapinit 3; heapinit 2]
-
-
-
-initHeapZipper empty (heapinit 1) myheapsses
-  |> print
-  |> moveN 2
-  |> subtractIJ 1 2
-  |> print
-
-
-(*
-initHeapZipper empty (heapinit 1) myheapsses
-  |> print
-  |> moveN 2
-  |> print
-*)
-
-(*
-initHeapZipper empty (heapinit 1) myheapsses
-  |> print
-  |> forward
-  |> print
-  |> forward
-  |> print
-  |> forward
-  |> print
-  |> goToBeginning
-  |> print
-*)
-
-
-print "hey"
-
-
-(*
-initHeapZipper empty (heapinit 1) myheapsses
-  |> print
-  |> forward
-  |> print
-  |> forward
-  |> print
-  |> backward
-  |> print
-  |> backward
-  |> print
-  |> backward
-  |> print
-*)
-//heaps --> return all heaps
-//currentHeap --> return current Heap
-
-
 
 
 
