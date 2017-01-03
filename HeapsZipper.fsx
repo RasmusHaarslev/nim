@@ -92,8 +92,11 @@ let subtract i j xs =
               initHeapZipper prev (Heap.init i) remaining |> goToBeginning
         | i ->
               let heaps = Heaps.merge (Heaps.flip prev) remaining
-              initHeapZipper Heaps.empty (Heaps.hd heaps) (Heaps.tl heaps)
-
+              if Heaps.isEmpty heaps then
+                  initHeapZipper Heaps.empty (Heap.init 0) Heaps.empty
+              else
+                  initHeapZipper Heaps.empty (Heaps.hd heaps) (Heaps.tl heaps)
+  
         (*
             if Heaps.isEmpty remaining then
                 initHeapZipper (Heaps.tl prev) (Heaps.hd prev) (Heaps.empty) |> goToBeginning
