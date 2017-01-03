@@ -3,10 +3,12 @@ module GameController
     #load "AsyncEventQueue.fsx"
     #load "Gui.fsx"
     #load "HeapsZipper.fsx"
+    #load "Ai.fsx"
 
     open Gui
     open AsyncEventQueue
     open HeapsZipper
+    open Ai
 
     let rand = System.Random()
     type GameState = {
@@ -23,23 +25,29 @@ module GameController
             AiEnabled = gs.AiEnabled;
         }
 
-    let setupNewGame () = {
+    let setupNewGame (enableAI) = {
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
-            Heap = HeapsZipper.initFromList [for i in 1 .. rand.Next(1, 5) -> rand.Next(1, 100)];
-            AiEnabled = false;
+            Heap = HeapsZipper.initFromList [for i in 1 .. rand.Next(3, 15) -> rand.Next(1, 100)];
+            AiEnabled = enableAI;
         }
 
     let q = AsyncEventQueue.instance
     let rec menu() =
         async {
-            let ng = setupNewGame()
+            
             let! msg = q.Receive()
             match msg with
                 | NewGame   -> 
-                    Gui.update (HeapsZipper.toList ng.Heap)
+                    let ng = setupNewGame(false)
                     printfn "%A" (HeapsZipper.toList ng.Heap)
                     return! ready(ng)
-                | NewAiGame -> if ng.TurnBit then return! aiReady(ng) else return! ready(ng)
+                | NewAiGame -> 
+                    let ng = setupNewGame(true)
+                    if ng.TurnBit 
+                    then
+                        return! aiReady(ng)
+                    else
+                        return! ready(ng)
                 | _         -> failwith "Menu: Unexpected Message"
             // Evt make color change to indicate ready.
         }
@@ -55,20 +63,20 @@ module GameController
                     else return! ready(newGameState)
                 | Clear         ->
                     return! menu()
-                | NewGame       -> return! ready(setupNewGame())
-                | _             -> failwith "Ready: Unexpected Message"
+                | NewGame         -> return! ready(setupNewGame(false))  
+                | NewAiGame       -> return! ready(setupNewGame(true))
+                | _                         -> failwith "Ready: Unexpected Message"
         }
     and aiReady(gameState) =
         async {
             // Evt make color change to indicate ready.
+            printfn "IN AI MAKE MOVE"
             Gui.update (HeapsZipper.toList gameState.Heap)
-            let! msg = q.Receive()
-            match msg with
-                | Move (a,b)    -> 
-                    let newGameState = move (a,b) gameState
-                    if gameState.AiEnabled then return! ready(newGameState)
-                    else return! ready(newGameState)
-                | _             -> failwith "Ready: Unexpected Message"
+
+            let moveTupl = Ai.aiMove (HeapsZipper.toList gameState.Heap)
+            printfn "AiMove: %A" moveTupl
+            let ns = move moveTupl gameState
+            return! ready(ns)
         }
     and winGame(gameState) =
         async {

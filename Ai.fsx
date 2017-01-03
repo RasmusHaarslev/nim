@@ -46,8 +46,8 @@ module Ai
         if m = 0 then
             let largestHeapIdx: int = maxIndexBy heap
             in
-                AsyncEventQueue.instance.Post (Move (largestHeapIdx, 1))
+                (largestHeapIdx, 1)
         else
             let (heapIdx, removeCount) = findMove heap m
             in
-                AsyncEventQueue.instance.Post (Move (heapIdx, removeCount))
+                (heapIdx, removeCount)

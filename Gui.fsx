@@ -49,7 +49,6 @@ module Gui
             | x::xs     ->
                 let rad = new RadioButton(Text=x.ToString(),Top=yPos,Left=30)
                 let radioSelectHandler event =
-                    printfn "Selected heap nr: %A" count
                     selectedHeap <- count
                     //AsyncEventQueue.instance.Post (AsyncEventQueue.SelectHeap count)
 
@@ -88,7 +87,6 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let newGameHandler _ = 
-        printfn "Clicked newGameButton"
         AsyncEventQueue.instance.Post NewGame
     newGameButton.Click.Add(newGameHandler)
 
@@ -103,7 +101,6 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let makeDrawHandler _ =
-        printfn "Clicked drawButton"
         let numMatches = 
             try
                 int chooseMatches.Text
@@ -140,7 +137,6 @@ module Gui
                 | _ as d -> 
                     printfn "Could not parse integer: %s" chooseMatches.Text
                     -1        
-        printfn "Changed match choice to: %d" selectedNumMatches
     chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
     
