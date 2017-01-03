@@ -13,12 +13,15 @@ type Heap =
 
 
 // empty matches
-let empty = 0
+let empty = Heap 0
 
 /// single Heap
 //husk at ændre navn
 let init n =
     Heap n
+
+let toInt (Heap n) =
+    n
 
 //add n to a Heap
 //skal måske også laves til ad one

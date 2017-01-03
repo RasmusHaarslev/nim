@@ -17,8 +17,10 @@ module Gui
 
     // Add the buttons/text fields in the bottom of the screen.
     let newGameButton =
-      new Button(Location = Point(30,420), MinimumSize=Size(100,50),
-                 MaximumSize = Size(100,50),Text = "New Game")
+      new Button(Location = Point(10,410), Size=Size(100,22),Text = "New Game")
+
+    let newAiGameButton =
+      new Button(Location = Point(10,435), Size=Size(100,22),Text = "New AI Game")
 
     let makeDrawButton =
       new Button(Location = Point(380,420), MinimumSize=Size(100,50),
@@ -31,7 +33,6 @@ module Gui
     (* This list is keeping track of how many heaps are added for render, so
      * that we can correctly track the heap selected by the heap.
      *)
-    let mutable heapList = []
     let mutable selectedHeap        = -1
     let mutable selectedNumMatches  = -1
     (* Given a list of integers of size n,
@@ -41,7 +42,7 @@ module Gui
      * fun type: int list -> unit
      *)
     let populateHeapPanel heaps =
-        printfn "Populating panel with %d heaps" (List.length heaps)
+        printfn "Populating panel with"
         let rec inner heaps yPos count = 
             match heaps with
             | []        -> ()
@@ -50,10 +51,9 @@ module Gui
                 let radioSelectHandler event =
                     printfn "Selected heap nr: %A" count
                     selectedHeap <- count
-                    AsyncEventQueue.ev.Post (AsyncEventQueue.SelectHeap count)
+                    //AsyncEventQueue.instance.Post (AsyncEventQueue.SelectHeap count)
 
                 rad.Click.Add(radioSelectHandler)
-                heapList <- heapList @ [(rad, count)]
                 heapPanel.Controls.Add rad
                 inner xs (yPos + 20) (count + 1)
 
@@ -71,8 +71,14 @@ module Gui
             heapPanel.Controls.RemoveAt(0)
         ()
 
+    let update heaps =
+        clearHeapPanel()
+        populateHeapPanel heaps
+
+
     // Add all the items.
     mainWindow.Controls.Add newGameButton
+    mainWindow.Controls.Add newAiGameButton
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
 
@@ -83,9 +89,13 @@ module Gui
      *)
     let newGameHandler _ = 
         printfn "Clicked newGameButton"
-        clearHeapPanel ()
-
+        AsyncEventQueue.instance.Post NewGame
     newGameButton.Click.Add(newGameHandler)
+
+
+    let newAiGameHandler _ =
+        AsyncEventQueue.instance.Post NewAiGame
+    newAiGameButton.Click.Add(newAiGameHandler)
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
@@ -103,12 +113,11 @@ module Gui
                     -1
 
         printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
-        //numMatches  |> printfn "%A"
 
         match selectedHeap,numMatches with
-            | -1,_       -> AsyncEventQueue.ev.Post AsyncEventQueue.Error
-            | _,-1       -> AsyncEventQueue.ev.Post AsyncEventQueue.Error
-            | _,_        -> AsyncEventQueue.ev.Post (Move (selectedHeap, numMatches))
+            | -1,_       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
+            | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
+            | _,_        -> AsyncEventQueue.instance.Post (Move (selectedHeap, numMatches))
 
     makeDrawButton.Click.Add(makeDrawHandler)
 

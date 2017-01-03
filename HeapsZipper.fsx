@@ -63,7 +63,7 @@ let initHeapZipper prev x remaining =
     HeapZipper (prev, x, remaining)
 
 let initFromList xs =                                                                             
-    HeapZipper (Heap.empty,  Heap.init (List.head xs), Heaps.fromListofInt (List.tail xs))
+    HeapZipper (Heaps.empty,  Heap.init (List.head xs), Heaps.heapsFromListofInt (List.tail xs))
 
 let rec goToBeginning xs =
     match xs with
@@ -86,7 +86,7 @@ let focus (HeapZipper (_, x, _)) = x
 let subtract i j xs =
     let (HeapZipper (prev, x, remaining)) = goToBeginning xs |> moveN i
 
-    initHeapZipper prev (Heap.subtract j x) remaining
+    initHeapZipper prev (Heap.subtract j x) remaining |> goToBeginning
 
 let toList (HeapZipper (prev, x, remaining)) =                                             
         Heaps.cons remaining x                                                  

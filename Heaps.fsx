@@ -142,7 +142,7 @@ let rec toList xs =
         match xs with                                                           
                 | EmptyHeaps -> []                                                  
                 | LinkedHeaps (h, tl) ->                                            
-                         h :: (toList tl)  
+                         (toInt h) :: (toList tl)  
 
 let print xs =
   printfn "%A" xs
