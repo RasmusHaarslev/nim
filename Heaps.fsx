@@ -34,6 +34,13 @@ let isEmpty = function
     | _ -> false
 
 
+let flip xs =
+    let rec aux acc = function
+          | EmptyHeaps -> acc
+          | LinkedHeaps (y, ys) ->
+              aux (cons acc y) ys
+    aux empty xs
+
 
 // merge
 let rec merge xs ys =

@@ -89,14 +89,37 @@ let subtract i j xs =
 
     match Heap.toInt (Heap.subtract j x) with
         | i when i > 0 ->
-            initHeapZipper prev (Heap.init i) remaining |> goToBeginning
+              initHeapZipper prev (Heap.init i) remaining |> goToBeginning
         | i ->
-            initHeapZipper prev (Heaps.hd remaining) (Heaps.tl remaining) |> goToBeginning
+              let heaps = Heaps.merge (Heaps.flip prev) remaining
+              initHeapZipper Heaps.empty (Heaps.hd heaps) (Heaps.tl heaps)
+
+        (*
+            if Heaps.isEmpty remaining then
+                initHeapZipper (Heaps.tl prev) (Heaps.hd prev) (Heaps.empty) |> goToBeginning
+           else
+                let heaps = Heaps.merge prev remaining
+                initHeapZipper Heaps.empty (Heaps.hd heaps) (Heaps.tl heaps)
+*)
+
+  (*
+                | (Heaps.empty, Heaps.empty) ->
+                    initHeapZipper Heaps.empty Heap.empty Heaps.empty
+                | (Heaps.empty, remaining) ->
+                    initHeapZipper Heaps.empty (Heaps.hd remaining) (Heaps.tl remaining)
+                | (prev, Heaps.empty) ->
+                    initHeapZipper Heaps.empty (Heaps.hd prev) (Heaps.tl prev)
+                | (prev, remaining) ->
+                    initHeapZipper Heaps.prev (Heaps.hd remaining) (Heaps.tl remaining)
+                        |> goToBeginning
+*)
+            // let heap = Heaps.merge prev remaining
 
 
 
-let toList (HeapZipper (prev, x, remaining)) =                                             
-        Heaps.cons remaining x                                                  
+
+let toList (HeapZipper (prev, x, remaining)) =
+        Heaps.cons remaining x
                 |> Heaps.merge prev 
                 |> Heaps.toList
 
