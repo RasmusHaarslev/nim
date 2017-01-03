@@ -138,7 +138,11 @@ let heapsFromListofInt xs =
     List.fold consInt EmptyHeaps xs                                         
                                    
 
-
+let rec toList xs =                                                                               
+        match xs with                                                           
+                | EmptyHeaps -> []                                                  
+                | LinkedHeaps (h, tl) ->                                            
+                         h :: (toList tl)  
 
 let print xs =
   printfn "%A" xs
