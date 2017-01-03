@@ -108,11 +108,11 @@ let myheapsses = Heaps.heapsFromListofHeap [Heap.init 4; Heap.init 3; Heap.init 
 
 
 
-initHeapZipper Heaps.empty (Heap.init 1) myheapsses
-  |> print
-  |> moveN 2
-  |> subtract 1 2
-  |> print
+//initHeapZipper Heaps.empty (Heap.init 1) myheapsses
+//  |> print
+//  |> moveN 2
+//  |> subtract 1 2
+//  |> print
 
 
 (*

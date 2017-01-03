@@ -150,11 +150,11 @@ let print xs =
 
 
 
-empty
-    |> merge (init (Heap.init 3))
-    |> merge (init (Heap.init 1))
-    |> merge (init (Heap.init 2))
-    |> print
+//empty
+//    |> merge (init (Heap.init 3))
+//    |> merge (init (Heap.init 1))
+//    |> merge (init (Heap.init 2))
+//    |> print
 
 
 
