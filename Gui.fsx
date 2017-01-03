@@ -5,12 +5,12 @@ module Gui
     open System.Windows.Forms
     open System.Drawing
 
-    let mainWindow = new Form(Text="Nim Player",Size=Size(520,500))
+    let mainWindow = new Form(Text="Nim Player",Size=Size(290,500))
     // Next line disables resizing of the window
     mainWindow.FormBorderStyle <- FormBorderStyle.FixedSingle
 
     // Add a panel, to group up all the radio buttons
-    let heapPanel = new Panel(Size=Size(500,390),Top=10,Left=10)
+    let heapPanel = new Panel(Size=Size(270,390),Top=10,Left=10)
     heapPanel.AutoScroll <- true
     heapPanel.BackColor <- Color.LightGray
     let radioBox = new GroupBox(Size=Size(500,390),Top=10,Left=10)
@@ -23,11 +23,19 @@ module Gui
       new Button(Location = Point(10,435), Size=Size(100,22),Text = "New AI Game")
 
     let makeDrawButton =
-      new Button(Location = Point(380,420), MinimumSize=Size(100,50),
-                 MaximumSize = Size(100,50),Text = "Draw!")
+      new Button(Location = Point(115,435), Size=Size(100,22),Text = "Draw!")
 
     let chooseMatches = 
-      new TextBox(Location = Point(150,420),Size = Size(200,25))
+      new TextBox(Location = Point(115,410),Size = Size(165,22))
+
+    let showSettingsButton =
+      new Button(Location = Point(217,435), Size=Size(60,22),Text = "Options")
+
+    let logWindow = 
+      new TextBox(Location = Point(295,10),Size = Size(205,200))
+    logWindow.Multiline <- true
+    // Shouldn't be editable.
+    logWindow.ReadOnly <- true
 
     
     (* This list is keeping track of how many heaps are added for render, so
@@ -35,6 +43,7 @@ module Gui
      *)
     let mutable selectedHeap        = -1
     let mutable selectedNumMatches  = -1
+    let mutable optionsShown        = false
     (* Given a list of integers of size n,
      * creates n radiobuttons.
      * The integers in the list is used as label for each button.
@@ -80,6 +89,8 @@ module Gui
     mainWindow.Controls.Add newAiGameButton
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
+    mainWindow.Controls.Add showSettingsButton
+    mainWindow.Controls.Add logWindow
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
@@ -101,22 +112,29 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let makeDrawHandler _ =
-        let numMatches = 
-            try
-                int chooseMatches.Text
-            with
-                | _ as d -> 
-                    printfn "Could not parse integer: %s" chooseMatches.Text
-                    -1
-
         printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
 
-        match selectedHeap,numMatches with
+        match selectedHeap,selectedNumMatches with
             | -1,_       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
             | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
-            | _,_        -> AsyncEventQueue.instance.Post (Move (selectedHeap, numMatches))
+            | _,_        -> AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
 
     makeDrawButton.Click.Add(makeDrawHandler)
+
+    (* Handler function for toggle options.
+     *
+     * fun type: System.EventArgs -> unit
+     *)
+    let showOptionsHandler _ =
+        printfn "Toggle Options"
+        if optionsShown then
+            mainWindow.Size <- Size(290,500)
+        else
+            mainWindow.Size <- Size(520,500)
+        optionsShown <- not optionsShown
+        ()
+        
+    showSettingsButton.Click.Add showOptionsHandler
 
     (* handlerFunction for the text field to choose matchNum
      * Error handling at this point is annoying. I suggest we don't!
@@ -132,7 +150,13 @@ module Gui
         // This will be more clear when we make the automaton I think.
         selectedNumMatches <- 
             try
-                int chooseMatches.Text
+                if int chooseMatches.Text = 0 
+                then
+                    printfn "Choosing 0 matches is not allowed! Cheater!"
+                    chooseMatches.Text <- "1"
+                    1
+                else
+                    int chooseMatches.Text
             with
                 | _ as d -> 
                     printfn "Could not parse integer: %s" chooseMatches.Text

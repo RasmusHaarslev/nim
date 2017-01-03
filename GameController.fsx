@@ -49,7 +49,7 @@ module GameController
 
     let setupNewGame (enableAI) = {
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
-            Heap = [for i in 1 .. rand.Next(3, 15) -> rand.Next(1, 100)];
+            Heap = [for i in 1 .. rand.Next(2, 4) -> rand.Next(1, 10)];
             AiEnabled = enableAI;
         }
 
@@ -115,15 +115,3 @@ module GameController
             //Gui.win gameState
             return! menu()
         }
-
-
-
-//    let initGame() =
-//        let initState = {
-//            TurnBit = rand.Next(0, 1);
-//            Heap = [for i in 1 .. rand.Next(1, 5) -> rand.Next(1, 100)];
-//            SelectedHeap = 0;
-//            RemoveCount = 1
-//        }
-//
-//        Async.StartImmediate (ready(initState))
