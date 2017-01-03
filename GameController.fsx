@@ -115,15 +115,3 @@ module GameController
             //Gui.win gameState
             return! menu()
         }
-
-
-
-//    let initGame() =
-//        let initState = {
-//            TurnBit = rand.Next(0, 1);
-//            Heap = [for i in 1 .. rand.Next(1, 5) -> rand.Next(1, 100)];
-//            SelectedHeap = 0;
-//            RemoveCount = 1
-//        }
-//
-//        Async.StartImmediate (ready(initState))
