@@ -61,10 +61,12 @@ module GameController
             match msg with
                 | NewGame   ->
                     let ng = setupNewGame(false)
+                    Gui.logWindow.Text <- Gui.logWindow.Text + "New Game Started"
                     printfn "%A" ng.Heap
                     return! ready(ng)
                 | NewAiGame ->
                     let ng = setupNewGame(true)
+                    Gui.logWindow.Text <- Gui.logWindow.Text + "New AI Game Started"
                     if ng.TurnBit
                     then
                         return! aiReady(ng)
@@ -84,9 +86,17 @@ module GameController
             let! msg = q.Receive()
             match msg with
                 | Move (a,b)    ->
+                    let logMsg = sprintf "Move: (%d,%d)" a b
+                    Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)  
+                    
                     let newGameState = move (a,b) gameState
-                    if gameState.AiEnabled then return! aiReady(newGameState)
-                    else return! ready(newGameState)
+
+                    
+                    if gameState.AiEnabled 
+                    then
+                        return! aiReady(newGameState)
+                    else
+                        return! ready(newGameState)
                 | Clear         ->
                     return! menu()
                 | NewGame         -> return! ready(setupNewGame(false))
@@ -103,7 +113,10 @@ module GameController
             Gui.update gameState.Heap
 
             let moveTupl = Ai.aiMove gameState.Heap
+
             printfn "AiMove: %A" moveTupl
+            let logMsg = sprintf "AI Move: %A" moveTupl
+            Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)  
             let ns = move moveTupl gameState
             return! ready(ns)
         }
