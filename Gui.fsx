@@ -70,6 +70,11 @@ module Gui
             heapPanel.Controls.RemoveAt(0)
         ()
 
+    (*
+     *)
+    let colorNthRadio n = n
+        //heapPanel.GetC(n).BackColor <- Color.Gray
+
     let update heaps =
         clearHeapPanel()
         populateHeapPanel heaps

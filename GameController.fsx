@@ -53,7 +53,12 @@ module GameController
         }
     and ready(gameState) = 
         async {
-            // Evt make color change to indicate ready.
+            
+            // If focus = 0 then someone won.
+            if Heap.toInt (HeapsZipper.focus gameState.Heap) = 0 then
+                return! winGame(gameState)
+            else
+
             Gui.update (HeapsZipper.toList gameState.Heap)
             let! msg = q.Receive()
             match msg with
@@ -69,12 +74,16 @@ module GameController
         }
     and aiReady(gameState) =
         async {
-            // Evt make color change to indicate ready.
             printfn "IN AI MAKE MOVE"
+
+            if Heap.toInt (HeapsZipper.focus gameState.Heap) = 0 then
+                return! winGame(gameState)
+            else
             Gui.update (HeapsZipper.toList gameState.Heap)
 
             let moveTupl = Ai.aiMove (HeapsZipper.toList gameState.Heap)
             printfn "AiMove: %A" moveTupl
+            //Gui.colorNthRadio (fst moveTupl)
             let ns = move moveTupl gameState
             return! ready(ns)
         }
@@ -82,15 +91,3 @@ module GameController
         async {
             failwith "Not implemented"
         }
-
-
-
-//    let initGame() =
-//        let initState = {
-//            TurnBit = rand.Next(0, 1);
-//            Heap = [for i in 1 .. rand.Next(1, 5) -> rand.Next(1, 100)];
-//            SelectedHeap = 0;
-//            RemoveCount = 1
-//        }
-//
-//        Async.StartImmediate (ready(initState))
