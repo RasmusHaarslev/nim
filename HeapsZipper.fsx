@@ -83,10 +83,17 @@ let focus (HeapZipper (_, x, _)) = x
 
 
 
+// det lidt dum med gotobeginning.
 let subtract i j xs =
     let (HeapZipper (prev, x, remaining)) = goToBeginning xs |> moveN i
 
-    initHeapZipper prev (Heap.subtract j x) remaining |> goToBeginning
+    match Heap.toInt (Heap.subtract j x) with
+        | i when i > 0 ->
+            initHeapZipper prev (Heap.init i) remaining |> goToBeginning
+        | i ->
+            initHeapZipper prev (Heaps.hd remaining) (Heaps.tl remaining) |> goToBeginning
+
+
 
 let toList (HeapZipper (prev, x, remaining)) =                                             
         Heaps.cons remaining x                                                  
@@ -95,6 +102,9 @@ let toList (HeapZipper (prev, x, remaining)) =
 
 
 let myheapsses = Heaps.heapsFromListofHeap [Heap.init 4; Heap.init 3; Heap.init 2]
+
+
+
 
 
 
