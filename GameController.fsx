@@ -44,6 +44,8 @@ module GameController
             AiEnabled = gs.AiEnabled
         }
 
+    let checkWin gs =
+        gs.Heap.Length < 1
 
     let setupNewGame (enableAI) = {
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
@@ -73,6 +75,10 @@ module GameController
         }
     and ready(gameState) =
         async {
+            if checkWin gameState
+            then return! winGame(gameState)
+            else
+
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
             let! msg = q.Receive()
@@ -89,8 +95,11 @@ module GameController
         }
     and aiReady(gameState) =
         async {
+            if checkWin gameState
+            then return! winGame(gameState)
+            else
+
             // Evt make color change to indicate ready.
-            printfn "IN AI MAKE MOVE"
             Gui.update gameState.Heap
 
             let moveTupl = Ai.aiMove gameState.Heap
@@ -100,7 +109,11 @@ module GameController
         }
     and winGame(gameState) =
         async {
-            failwith "Not implemented"
+            if not gameState.TurnBit
+            then printfn "Player 2 (or AI) has won!"
+            else printfn "Player 1 has won!"
+            //Gui.win gameState
+            return! menu()
         }
 
 
