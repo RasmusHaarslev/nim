@@ -1,6 +1,5 @@
 module AsyncEventQueue
     
-    #load "types.fsx"
     open Types
 
 

@@ -1,8 +1,5 @@
 module Gui
 
-    #load "types.fsx"
-    #load "AsyncEventQueue.fsx"
-
     open Types
     open AsyncEventQueue
     open System.Windows.Forms

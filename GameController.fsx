@@ -1,15 +1,8 @@
 module GameController
 
-    #load "types.fsx"
-    #load "AsyncEventQueue.fsx"
-    #load "Gui.fsx"
-    #load "HeapsZipper.fsx"
-    #load "Ai.fsx"
-
     open Types
     open Gui
     open AsyncEventQueue
-    open HeapsZipper
     open Ai
 
     let rand = System.Random()
