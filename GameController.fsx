@@ -11,11 +11,21 @@ module GameController
     open Ai
 
     let rand = System.Random()
+    
+    type Difficulty =
+        | Easy
+        | Medium
+        | Hard
+        | Godlike
+
     type GameState = {
         TurnBit: bool;
         Heap: int list;
         AiEnabled: bool
+        Difficulty: Difficulty
     }
+
+
 
     //let mutable gameState = {}
 
@@ -41,7 +51,8 @@ module GameController
         in {
             TurnBit = not gs.TurnBit;
             Heap = newHeap;
-            AiEnabled = gs.AiEnabled
+            AiEnabled = gs.AiEnabled;
+            Difficulty = gs.Difficulty
         }
 
     let checkWin gs =
@@ -51,6 +62,7 @@ module GameController
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
             Heap = [for i in 1 .. rand.Next(2, 4) -> rand.Next(1, 10)];
             AiEnabled = enableAI;
+            Difficulty = Godlike
         }
 
     let q = AsyncEventQueue.instance
@@ -115,7 +127,7 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
-            let moveTupl = Ai.aiMove gameState.Heap
+            let moveTupl = Ai.aiMove gameState
 
             printfn "AiMove: %A" moveTupl
             Gui.addLogMessage (sprintf "AI Move: %A" moveTupl)

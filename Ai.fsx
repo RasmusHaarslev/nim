@@ -1,6 +1,8 @@
 module Ai
     #load "AsyncEventQueue.fsx"
+    #load "GameController.fsx"
     open AsyncEventQueue
+    open GameController
 
     (* Recursively xorbs all elements in the list heap
      * m = a0 ^^^ a1 ^^^ ... ^^^ ax
@@ -40,14 +42,16 @@ module Ai
 
     (* Finds the next play-move for the AI
      *)
-    let aiMove heap =
-        let m = findm heap
+    let aiMove gameState =
+        let m = findm gameState.Heap
 
-        if m = 0 then
-            let largestHeapIdx: int = maxIndexBy heap
-            in
-                (largestHeapIdx, 1)
-        else
-            let (heapIdx, removeCount) = findMove heap m
-            in
-                (heapIdx, removeCount)
+        let move =
+            if m = 0 
+            then (maxIndexBy gameState.Heap, 1)
+            else (findMove gameState.Heap m)
+        in
+            match gameState.Difficulty with
+            | GameController.Easy       -> move
+            | GameController.Medium     -> move
+            | GameController.Hard       -> move
+            | GameController.Godlike    -> move
