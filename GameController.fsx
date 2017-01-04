@@ -22,14 +22,24 @@ let initialState =
     ; Write = "1"
     }
 
+
 // for parsing Int active patterns
+// denne skal ind i parsers sammen med den anden fra gui
 let (|Int|_|) str =
-   match System.Int32.TryParse(str) with
-   | (true,int) -> Some(int)
-   | _ -> None
+    match System.Int32.TryParse(str) with
+        | (true,int) -> Some(int)
+        | _ -> None
+
+
+let (|Win|_|) x =
+    match HeapsZipper.focus x with
+        | x when x = 0 ->
+            Some(x)
+        | _ -> None
 
 
 let q = AsyncEventQueue.instance
+
 
 let rec menu() =
     async {
@@ -48,17 +58,43 @@ let rec menu() =
                 failwith "Menu: Unexpected Message"
     }
 
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+and checkWin(initialState) =
+
+    let state = initialState
+
+    match state with
+
+        | { HeapsZipper = Win _ } ->
+            win(state)
+
+        | _ ->
+            switch(state)
+
+
+and switch(initialState) =
+
+    let state = initialState
+
+    let turnBit =
+          not initialState.TurnBit
+
+    let state =
+        { initialState with TurnBit = turnBit }
+
+    draw(state)
+
 and draw(initialState) =
 
-      //Gui.clearHeapsZipper
-      //denne function skal opdateres vi skal undnytte zipper
-      Gui.clearHeapsZipper()
-      Gui.drawHeapsFromList(HeapsZipper.toIndexedList initialState.HeapsZipper)
-      Gui.setWrite(initialState.Write)
+    //Gui.clearHeapsZipper
+    //denne function skal opdateres vi skal undnytte zipper
+    Gui.clearHeapsZipper()
+    Gui.drawHeapsFromList(HeapsZipper.toIndexedList initialState.HeapsZipper)
+    Gui.setWrite(initialState.Write)
 
-      let state = initialState
+    let state = initialState
 
-      ready(state)
+    ready(state)
 
 
 and ready(initialState) =
@@ -79,18 +115,11 @@ and ready(initialState) =
                         let heapsZipper =
                             HeapsZipper.subtract b initialState.HeapsZipper
 
-                        let turnBit =
-                            not initialState.TurnBit
-
                         // det her er en fucked structur
                         let state =
-                            { initialState
-                                with
-                                    HeapsZipper = heapsZipper;
-                                    TurnBit = turnBit
-                            }
+                          { initialState with HeapsZipper = heapsZipper }
 
-                        return! draw(state)
+                        return! checkWin(state)
 
                     | _ ->
                         failwith "Write: Unexpected Message"
@@ -100,17 +129,9 @@ and ready(initialState) =
                 let heapsZipper =
                     HeapsZipper.move n initialState.HeapsZipper
 
-                printfn "%A" n
-
                 let state =
                     { initialState with HeapsZipper = heapsZipper }
 
-
-                  (*
-                match state with
-
-                    | 
-                    *)
 
                 return! draw(state)
 
@@ -134,21 +155,6 @@ and ready(initialState) =
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 and aiReady(gameState) =
     async {
         failwith "Not implemented"
@@ -168,7 +174,7 @@ and aiReady(gameState) =
         *)
     }
 
-and wingame(gamestate) =
+and win(gamestate) =
     async {
-        failwith "not implemented"
+        failwith "win not implemented"
     }

@@ -34,29 +34,9 @@ let init x =
     HeapsZipper (Heaps.empty, x, Heaps.empty)
 
 
-// get HeapsZipper focus
-let focus (HeapsZipper (_, x, _)) =  x
-
-
 // insert Heap on front of Heapszipper
 let insert y (HeapsZipper (prev, x, remaining)) =
     HeapsZipper (Heaps.cons y prev, x, remaining)
-
-
-
-// this is onlyneeded coz no funtional view
-// HeapsZipper toList of int
-let toIndexedList xs =
-    let rec aux i = function
-        | (HeapsZipper (prev, x, remaining)) when Heaps.isEmpty prev ->
-            (Heap.toInt x, 0) :: (Heaps.toIndexedList remaining)
-
-        | (HeapsZipper ( prev, x, remaining)) ->
-            (Heap.toInt (Heaps.hd prev), i) ::
-                (aux (i-1) (HeapsZipper (Heaps.tl prev, x, remaining)))
-
-    //yeahhhh!
-    List.sortBy (fun (_, y) -> -y) (aux (-1) xs)
 
 
 // initialModel for testing purposes
@@ -72,11 +52,41 @@ let initialModel =
 //fix tomorrow these tomorrow
 //fix tomorrow these tomorrow
 //fix tomorrow these tomorrow
-let subtract i xs =
-    let (HeapsZipper (prev, x, remaining)) = xs
-    HeapsZipper (prev, Heap.subtract i x, remaining)
+// this is onlyneeded coz no funtional view
+// HeapsZipper toList of int
+let toIndexedList xs =
+    let rec aux i = function
+        | (HeapsZipper (prev, x, remaining)) when Heaps.isEmpty prev ->
+            (Heap.toInt x, 0) :: (Heaps.toIndexedList remaining)
+
+        | (HeapsZipper ( prev, x, remaining)) ->
+            (Heap.toInt (Heaps.hd prev), i) ::
+                (aux (i-1) (HeapsZipper (Heaps.tl prev, x, remaining)))
+
+    //yeahhhh!
+    List.sortBy (fun (_, y) -> -y) (aux (-1) xs)
 
 
+// get HeapsZipper focus as int
+let focus (HeapsZipper (_, x, _)) =
+    Heap.toInt x
+
+// someSubtract
+//  brug active patterns?
+let subtract n (HeapsZipper (prev, x, remaining)) =
+    match Heap.toInt (Heap.subtract n x) with
+        | i when i > 0 ->
+            HeapsZipper (prev, Heap.init i, remaining)
+        | i ->
+              let heaps = Heaps.merge (Heaps.reverse prev) remaining
+
+              if Heaps.isEmpty heaps then
+                  HeapsZipper (Heaps.empty, Heap.init 0, Heaps.empty)
+              else
+                  HeapsZipper (Heaps.empty, Heaps.hd heaps, Heaps.tl heaps)
+
+
+// move curser
 let rec move n xs =
     match n with
       | n when n > 0 ->
