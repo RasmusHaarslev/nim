@@ -65,10 +65,10 @@ module GameController
     let checkWin gs =
         gs.Heap.Length < 1
 
-    let setupNewGame (AiState) = {
+    let setupNewGame (aiState) = {
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
             Heap = [for i in 1 .. rand.Next(2, 4) -> rand.Next(1, 10)];
-            Ai = AiState
+            Ai = aiState
         }
 
     let q = AsyncEventQueue.instance
