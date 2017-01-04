@@ -47,6 +47,9 @@ let initialModel =
         |> insert (Heap.init 9)
 
 
+let rec findM (HeapsZipper (prev, x, remaining)) =
+    (Heaps.findM prev) ^^^ (Heap.toInt x) ^^^ (Heaps.findM remaining)
+
 
 
 //fix tomorrow these tomorrow
@@ -117,33 +120,3 @@ init (Heap.init -2)
     |> printfn "%A"
 *)
 
-
-// NOT happy with these shit functions below....
-// det lidt dum med gotobeginning.
-(*
-let rec moveN n xs =
-    if n > 0 then
-        moveN (n-1) (forward xs)
-    else
-        xs
-
-let rec goToBeginning xs =
-    match xs with
-        | HeapZipper (prev, x, remaining) when not (Heaps.isEmpty prev) ->
-            goToBeginning (backward xs)
-        | x -> x
-
-
-let subtract i j xs =
-    let (HeapZipper (prev, x, remaining)) = goToBeginning xs |> moveN i
-
-    match Heap.toInt (Heap.subtract j x) with
-        | i when i > 0 ->
-              init prev (Heap.init i) remaining |> goToBeginning
-        | i ->
-              let heaps = Heaps.merge (Heaps.reverse prev) remaining
-              if Heaps.isEmpty heaps then
-                  init (Heap.init 0) Heaps.empty
-              else
-                  init (Heaps.hd heaps) (Heaps.tl heaps)
-*)

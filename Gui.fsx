@@ -7,56 +7,58 @@ open System.Drawing
 let q = AsyncEventQueue.instance
 
 let mainWindow =
-    new Form(Text="Nim Player",Size=Size(520,500))
+    new Form(Text="Nim Player",Size=Size(720,700))
 
 let newGameButton =
     new Button(Location=Point(10,410),Size=Size(100,22),Text="New Game")
 
-(*
 let newAiGameButton =
-    new Button(Location=Point(10,435),Size=Size(100,22),Text = "New AI Game")
-*)
+    new Button(Location=Point(10,435),Size=Size(100,22),Text="New AI Game")
+
+let menuButton =
+    new Button(Location=Point(10,410),Size=Size(100,22),Text="Go To Menu")
 
 let heapsPanel =
     new Panel(Size=Size(500,390),Top=10,Left=10)
 
+let logPanel =
+    new Panel(Size=Size(200,200),Top=480,Left=10)
+
+let choosePanel =
+    new Panel(Size=Size(200,200),Top=420,Left=140)
 
 let makeDrawButton =
-    new Button(Location = Point(380,420), MinimumSize=Size(100,50),
-            MaximumSize = Size(100,50),Text = "Draw!")
+    new Button(Location=Point(380,420),MinimumSize=Size(100,50),
+            MaximumSize=Size(100,50),Text="Draw!")
 
-let chooseMatches =
-    new TextBox(Location = Point(150,420),Size = Size(200,25))
 
 
 mainWindow.Controls.Add(newGameButton)
-//mainWindow.Controls.Add(newAiGameButton)
+mainWindow.Controls.Add(newAiGameButton)
+mainWindow.Controls.Add(menuButton)
 mainWindow.Controls.Add(heapsPanel)
+mainWindow.Controls.Add(logPanel)
 mainWindow.Controls.Add(makeDrawButton)
-mainWindow.Controls.Add(chooseMatches)
+mainWindow.Controls.Add(choosePanel)
+
 
 let newGameHandler _ =
     q.Post AsyncEventQueue.NewGame
 
+let newAiGameHandler _ =
+    q.Post AsyncEventQueue.NewAiGame
 
-// kan måske argumentere for den her skal have argument med..
-// så kan man også slå den sammen med newgame
-(*
-newAiGameButton.Click.Add(fun _ -> q.Post AsyncEventQueue.NewAiGame)
-*)
-
-let chooseMatchesHandler _ =
-    q.Post (AsyncEventQueue.Write chooseMatches.Text)
+let menuHandler _ =
+    q.Post AsyncEventQueue.Menu
 
 
 let makeDrawHandler _ =
     q.Post (AsyncEventQueue.Take)
 
-
 newGameButton.Click.Add(newGameHandler)
+newAiGameButton.Click.Add(newAiGameHandler)
+menuButton.Click.Add(menuHandler)
 makeDrawButton.Click.Add(makeDrawHandler)
-
-chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
 
 // this is bad compared to elm
@@ -80,9 +82,47 @@ let drawHeapsFromList(xs) =
         //mutable
         y <- y + 20
 
+let initLog(str) =
+
+    let logWindow =
+        new TextBox(ReadOnly=true,Text=str,Size=Size(200,25))
+
+    logPanel.Controls.Add(logWindow)
+
+
+let clearLog() =
+    logPanel.Controls.Clear()
+
+
+let initChooseMatches(str) =
+
+    let chooseMatches =
+        new TextBox(Text=str,Size=Size(200,25))
+
+    let chooseMatchesHandler _ =
+        q.Post (AsyncEventQueue.Write chooseMatches.Text)
+
+    chooseMatches.TextChanged.Add(chooseMatchesHandler)
+
+    choosePanel.Controls.Add(chooseMatches)
+
+
+let clearChooseMatches() =
+    choosePanel.Controls.Clear()
+
+
 let clearHeapsZipper() =
     heapsPanel.Controls.Clear()
 
 
-let setWrite(str) =
-    chooseMatches.Text <- str
+let showNewGameButton(b) =
+    newGameButton.Visible <- b
+
+let showMenu(b) =
+    menuButton.Visible <- b
+
+let showNewAiGameButton(b) =
+    newAiGameButton.Visible <- b
+
+let showDrawButton(b) =
+    makeDrawButton.Visible <- b

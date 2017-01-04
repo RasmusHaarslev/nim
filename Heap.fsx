@@ -17,9 +17,13 @@ let toInt (Heap n) =
 let add n (Heap x) =
     Heap (x+n)
 
-// subtract n from a Heap -- kan inline ?
+// subtract n from a Heap -- kan inline ? dumt at det er int
 let subtract n (Heap x) =
-    Heap (x-n)
+    if n > 0 then
+        Heap (x-n)
+    else
+        failwith "Heap: subtract cant subtract
+          negative numbers cuz makes no sence"
 
 (*
 printfn "%A" (empty = Heap 0)

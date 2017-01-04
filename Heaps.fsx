@@ -34,10 +34,15 @@ let hd = function
     | _ -> failwith "Cannot do hd, on empty element"
 
 
-// isEmpty Heap ?
+// isEmpty Heaps ?
 let isEmpty = function
     | EmptyHeaps -> true
     | _ -> false
+
+// find m for heaps
+let rec findM = function
+    | EmptyHeaps -> 0
+    | LinkedHeaps (x, xs) -> (Heap.toInt x) + (findM xs)
 
 
 // reverse heaps

@@ -2,40 +2,45 @@
 #load "Gui.fsx"
 #load "HeapsZipper.fsx"
 #load "Ai.fsx"
+#load "Helpers.fsx"
 
 open AsyncEventQueue
 open Gui
 open HeapsZipper
 open Ai
+open Helpers
 
 type GameState =
     { TurnBit : bool
     ; HeapsZipper : HeapsZipper.HeapsZipper
-    ; Ai : Ai.Ai option // kan laves til et modul
-    ; Write : string
+    ; Ai : Ai.Ai option
+    ; Write : string  // bør også være zipper... der rer altid en write
+    /// kør HeapZipper helt i bund så mellem hver runde
+    ; Log : string list // unsafe da jeg benytter hd.. kan være optional?... der er altid en log
     }
 
-let initialState =
+(*
+type State =
+  | State of GameState
+for more modular code
+*)
+
+let initialAiGame =
     { TurnBit = true
-    ; HeapsZipper = HeapsZipper.initialModel // kun til tests
-    ; Ai = Some Ai.initImprovedAI
+    ; HeapsZipper = HeapsZipper.initialModel
+    ; Ai = Some (Ai.initImprovedAI 2)
     ; Write = "1"
+    ; Log = ["Game has just started"]
     }
 
 
-// for parsing Int active patterns
-// denne skal ind i parsers sammen med den anden fra gui
-let (|Int|_|) str =
-    match System.Int32.TryParse(str) with
-        | (true,int) -> Some(int)
-        | _ -> None
-
-
-let (|Win|_|) x =
-    match HeapsZipper.focus x with
-        | x when x = 0 ->
-            Some(x)
-        | _ -> None
+let initialMultiplayerGame =
+    { TurnBit = true
+    ; HeapsZipper = HeapsZipper.initialModel
+    ; Ai = None
+    ; Write = "1"
+    ; Log = ["Game has just started"]
+    }
 
 
 let q = AsyncEventQueue.instance
@@ -43,21 +48,43 @@ let q = AsyncEventQueue.instance
 
 let rec menu() =
     async {
-        let state = initialState
 
-        // Gui.update state
-        // kun gui variable skal komme fra gui
-        // update bør ske på det step man er ved.. lidt æregeligt med hvordan vi chekker if someone won
+        //kunne have været fedt at binde buttons til state
+        // lidt æregeligt med hvordan vi chekker if someone won
+        Gui.clearChooseMatches()
+        Gui.clearHeapsZipper()
+        Gui.clearLog()
+
+        Gui.showMenu(false)
+        Gui.showNewGameButton(true)
+        Gui.showNewAiGameButton(true)
+        Gui.showDrawButton(false)
 
         let! msg = q.Receive()
 
         match msg with
             | AsyncEventQueue.NewGame ->
-                return! draw(state)
+                let state = initialMultiplayerGame
+
+                return! checkWin(state)
+            | AsyncEventQueue.NewAiGame ->
+                let state = initialAiGame
+
+                return! checkWin(state)
             | _ ->
                 failwith "Menu: Unexpected Message"
     }
 
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
+//in these without listen you should disable all buttons... dissekan nok flyttes ud
 //in these without listen you should disable all buttons... dissekan nok flyttes ud
 and checkWin(initialState) =
 
@@ -65,15 +92,11 @@ and checkWin(initialState) =
 
     match state with
 
-        | { HeapsZipper = Win _ } ->
+        | { HeapsZipper = Helpers.Win _ } ->
             win(state)
 
         | _ ->
             switch(state)
-
-and log(initialState) =
-    //implement log
-    switch(initialState)
 
 and switch(initialState) =
 
@@ -90,38 +113,38 @@ and switch(initialState) =
 and draw(initialState) =
 
     let state = initialState
-    //Gui.clearHeapsZipper
-    //denne function skal opdateres vi skal undnytte zipper
-    Gui.clearHeapsZipper()
-    Gui.drawHeapsFromList(HeapsZipper.toIndexedList initialState.HeapsZipper)
-    Gui.setWrite(initialState.Write)
 
+    Gui.clearHeapsZipper()
+    Gui.drawHeapsFromList(HeapsZipper.toIndexedList state.HeapsZipper)
+
+    Gui.clearChooseMatches()
+    Gui.initChooseMatches(initialState.Write)
+
+    Gui.clearLog()
+    Gui.initLog(List.head state.Log)
 
     aiReady(state)
 
+// det giver måske ikke så meget mening man går direkte ind i denne her...
 and aiReady(initialState) =
-  //kan gå til win
-  //kan gå til win
-  //kan gå til win
-  //skal lave sit move
-  //skal lave sit move
-  //skal lave sit move
+
   let state = initialState
 
   match state with
      // vi vælger om turnbit starter på false eller true
-      | { Ai = Some ai; TurnBit = a; HeapsZipper = h } when a ->
+      | { Ai = Some ai; TurnBit = a; HeapsZipper = h; Log = l } when a ->
 
-          // kan ikke lave bad ai
-          // kan ikke lave bad ai
+          // kan ikke lave bad ai move sådan her
           let (i, j) = Ai.move h ai
 
           let heapsZipper =
               HeapsZipper.subtract2 i j h
 
-          // det her er en fucked structur
+          //ideally we would like only to add to log 1 place in code
+          let log = (sprintf "Move:(%d,%d)" i j) :: l
+
           let state =
-              { state with HeapsZipper = heapsZipper }
+              { state with HeapsZipper = heapsZipper; Log = log }
 
           checkWin(state)
       | _ ->
@@ -130,24 +153,35 @@ and aiReady(initialState) =
 and ready(initialState) =
     async {
 
+        Gui.showMenu(true)
+        Gui.showNewGameButton(false)
+        Gui.showNewAiGameButton(false)
+        Gui.showDrawButton(true)
+
         let! msg = q.Receive()
 
         match msg with
 
             | AsyncEventQueue.Take ->
 
-                // måske gå til switch state
                 let state = initialState
 
                 match state with
 
-                    | { Write = Int b } ->
+                    | { Write = Helpers.Int b; HeapsZipper = h; Log = l} ->
                         let heapsZipper =
-                            HeapsZipper.subtract b initialState.HeapsZipper
+                            HeapsZipper.subtract b h
 
-                        // det her er en fucked structur
+                            //ideally we would like only to add to log 1 place in code
+                            // problemet er zipper jo ikke er indexeret så man bør give
+                        let log = (sprintf "Player took:(%d)" b ) :: l
+
                         let state =
-                          { initialState with HeapsZipper = heapsZipper }
+                            { initialState
+                                with
+                                    HeapsZipper = heapsZipper;
+                                    Log = log
+                            }
 
                         return! checkWin(state)
 
@@ -171,19 +205,20 @@ and ready(initialState) =
 
                 match state with
 
-                    | { Write = Int b } ->
+                    | { Write = Helpers.Int b } ->
                         return! ready(state)
 
                     | _ ->
-                        failwith "Write: Unexpected Message"
+                        failwith "bad write: not handled yet"
 
-            //| NewAiGame       -> return! ready(setupNewGame(true))
+            | AsyncEventQueue.Menu ->
+                return! menu()
             | _ ->
                 failwith "Ready: Unexpected Message"
     }
 
-
 and win(gamestate) =
     async {
+      // add til log og gå til menu
         failwith "win not implemented"
     }

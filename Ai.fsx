@@ -1,24 +1,41 @@
+#load "HeapsZipper.fsx"
+
+open HeapsZipper
+
 type Ai =
-    | SimpleAI
-    | ImprovedAI
+    | ImprovedAI of int
 
-let initSimpleAI = SimpleAI
+let initImprovedAI n = ImprovedAI n
 
-let initImprovedAI = ImprovedAI
+let move heapsZipper (ImprovedAI n) =
+    /// disse er stadig invalid moves da de skal checkes mod zipperen
+    /// disse er stadig invalid moves da de skal checkes mod zipperen
+    /// disse er stadig invalid moves da de skal checkes mod zipperen
+    (2, 1)
+        //let m = HeapsZipper.findM heapsZipper
+        //if m = 0 then
 
-let move heapsZipper = function
-    | SimpleAI ->
-        (1, 1)
-    | ImprovedAI ->
-        (0, 3)
+        //else
+
+      (*let m = Hea heap
+
+    let aiMove heap =
+        let m = findm heap
+
+        if m = 0 then
+            let largestHeapIdx: int = maxIndexBy heap
+            in
+                (largestHeapIdx, 1)
+        else
+            let (heapIdx, removeCount) = findMove heap m
+            in
+                (heapIdx, removeCount)
+                *)
+      
+//let findMove heapsZipper m =    
+
 
 (*
-let rec findm heap =
-        match heap with
-        | [] -> 0
-        | x::xs -> x ^^^ findm xs
-
-
     let findMove heap m =
         let rec innerFoo heap m idx =
             match heap with

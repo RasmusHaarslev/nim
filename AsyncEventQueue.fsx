@@ -28,9 +28,8 @@ type Message =
     | Take
     | Write of String
     | SelectHeap of int
-//  | Error
-//  | SelectHeap of int
-//  | NewAiGame
+    | Menu
+    | NewAiGame
 
 
 let (instance: AsyncEventQueue<Message>) = AsyncEventQueue()
