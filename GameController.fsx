@@ -74,6 +74,7 @@ module GameController
         async {
 
             Gui.toggleDrawing false
+            Gui.setDiffEnabled true
 
             Gui.showButtons [Gui.newAiGameButton;Gui.newGameButton]
             Gui.hideButtons [Gui.clearButton]
@@ -81,14 +82,11 @@ module GameController
 
             let! msg = q.Receive()
             match msg with
-                | NewGame   ->
-                    let ng = setupNewGame(NoAI)
+                | NewGame (aiType)   ->
+                    let ng = setupNewGame(aiType)
+                    Gui.setDiffEnabled false
                     Gui.addLogMessage "New Game Started"
                     printfn "%A" ng.Heap
-                    return! ready(ng)
-                | NewAiGame ->
-                    let ng = setupNewGame(Godlike)
-                    Gui.addLogMessage "New AI Game Started"
                     if ng.TurnBit
                     then
                         return! aiReady(ng)

@@ -37,6 +37,7 @@ module Gui
     let logWindow =
       new TextBox(Location = Point(295,10),Size = Size(205,200))
     logWindow.Multiline <- true
+    logWindow.ScrollBars <- ScrollBars.Both
     // Shouldn't be editable.
     logWindow.ReadOnly <- true
 
@@ -58,7 +59,7 @@ module Gui
     let radioButtonDiffEasy = new RadioButton(Location = Point(300,245), Text = "Easy")
     let radioButtonDiffMedium = new RadioButton(Location = Point(350,225), Text = "Medium")
     let radioButtonDiffHard = new RadioButton(Location = Point(300,225), Text = "Hard")
-    let radioButtonDiffGodlike = new RadioButton(Location = Point(350,245), Text = "Godlike")
+    let radioButtonDiffGodlike = new RadioButton(Location = Point(350,245), Text = "Godlike", Checked = true)
     let difficultyLabel =
         new Label(Location = Point(300, 215), Size = Size(205, 15), Text = "Choose AI Difficulty")
     (*
@@ -67,6 +68,8 @@ module Gui
      *)
     let addLogMessage msg =
         logWindow.Text <- (logWindow.Text + "\n" + msg)
+        logWindow.SelectionStart <- logWindow.Text.Length
+        logWindow.ScrollToCaret()
 
     (*
      * Enable/disable drawing.
@@ -89,6 +92,11 @@ module Gui
             b.Enabled  <- true
             b.Visible  <- true
 
+    let setDiffEnabled b =
+        radioButtonDiffEasy.Enabled <- b
+        radioButtonDiffMedium.Enabled <- b
+        radioButtonDiffHard.Enabled <- b
+        radioButtonDiffGodlike.Enabled <- b
 
     (* These mutable variables are all used to keep track of state.
      * They were deemed too trivial or unsuitable to result in a node in our automaton.
@@ -96,6 +104,7 @@ module Gui
     let mutable selectedHeap        = -1
     let mutable selectedNumMatches  = 1
     let mutable optionsShown        = false
+    let mutable aiDiff              = Godlike
 
     (* Given a list of integers of size n,
      * creates n radiobuttons.
@@ -166,12 +175,12 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let newGameHandler _ =
-        AsyncEventQueue.instance.Post NewGame
+        AsyncEventQueue.instance.Post (NewGame NoAI)
     newGameButton.Click.Add(newGameHandler)
 
 
     let newAiGameHandler _ =
-        AsyncEventQueue.instance.Post NewAiGame
+        AsyncEventQueue.instance.Post (NewGame aiDiff)
     newAiGameButton.Click.Add(newAiGameHandler)
 
     (* Define and add handlerFunction for newGameButton
@@ -247,6 +256,33 @@ module Gui
     chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
 
+    (*
+     * Handler for change difficulty.
+     radioButtonDiffEasy
+radioButtonDiffMedium
+radioButtonDiffHard
+radioButtonDiffGodlike
+     *
+     *)
+    let easyDiffHandler _ =
+        printfn "Easy Difficulty Enabled"
+        aiDiff <- Easy
+    radioButtonDiffEasy.Click.Add easyDiffHandler
+
+    let mediumDiffHandler _ =
+        printfn "Medium Difficulty Enabled"
+        aiDiff <- Medium
+    radioButtonDiffMedium.Click.Add mediumDiffHandler
+
+    let hardDiffHandler _ =
+        printfn "Hard Difficulty Enabled"
+        aiDiff <- Hard
+    radioButtonDiffHard.Click.Add hardDiffHandler
+
+    let godlikeDiffHandler _ =
+        printfn "Godlike Difficulty Enabled"
+        aiDiff <- Godlike
+    radioButtonDiffGodlike.Click.Add godlikeDiffHandler
 
 
     mainWindow.Controls.Add heapPanel

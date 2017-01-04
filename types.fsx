@@ -11,8 +11,7 @@ module Types
         | Move of int*int
         | Error
         | SelectHeap of int
-        | NewGame
-        | NewAiGame
+        | NewGame of AiType
         | Clear
         | Download of string
 
