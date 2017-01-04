@@ -1,16 +1,16 @@
 module GameController
 
+    #load "types.fsx"
     #load "AsyncEventQueue.fsx"
     #load "Gui.fsx"
     #load "HeapsZipper.fsx"
     #load "Ai.fsx"
-    #load "types.fsx"
 
+    open Types
     open Gui
     open AsyncEventQueue
     open HeapsZipper
     open Ai
-    open Types
 
     let rand = System.Random()
 
@@ -52,7 +52,7 @@ module GameController
             else (findMove gameState.Heap m)
         in
             match gameState.Ai with
-            | None      -> failwith "There is no AI!"
+            | NoAI      -> failwith "There is no AI!"
             | Easy      ->
                 if rand.Next(1, 100) > 25
                 then (fst move, snd move + rand.Next(1, 5))
@@ -89,7 +89,7 @@ module GameController
             let! msg = q.Receive()
             match msg with
                 | NewGame   ->
-                    let ng = setupNewGame(None)
+                    let ng = setupNewGame(NoAI)
                     Gui.addLogMessage "New Game Started"
                     printfn "%A" ng.Heap
                     return! ready(ng)
@@ -124,7 +124,7 @@ module GameController
                     let newGameState = move (a,b) gameState
 
                     match gameState.Ai with
-                    | None  -> return! ready(newGameState)
+                    | NoAI  -> return! ready(newGameState)
                     | _     -> return! aiReady(newGameState)
                 | Clear         ->
                     Gui.update []

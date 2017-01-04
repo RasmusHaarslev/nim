@@ -1,7 +1,7 @@
 module Types
 
     type AiType =
-        | None
+        | NoAI
         | Easy
         | Medium
         | Hard
