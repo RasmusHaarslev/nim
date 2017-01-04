@@ -22,6 +22,9 @@ module Gui
     let newAiGameButton =
       new Button(Location = Point(10,435), Size=Size(100,22),Text = "New AI Game")
 
+    let clearButton =
+      new Button(Location = Point(10,410), Size=Size(100,47),Text = "Clear")  
+
     let makeDrawButton =
       new Button(Location = Point(115,435), Size=Size(100,22),Text = "Draw!")
 
@@ -63,6 +66,17 @@ module Gui
         makeDrawButton.Enabled <- b
         chooseMatches.ReadOnly <- not b
 
+    let hideButtons bs = 
+        printfn "Disabling Buttons."
+        for (b:Button) in bs do 
+            b.Enabled  <- false
+            b.Visible  <- false
+
+    let showButtons bs = 
+        printfn "Enabling Buttons"
+        for (b:Button) in bs do 
+            b.Enabled  <- true
+            b.Visible  <- true
 
 
     (* These mutable variables are all used to keep track of state.
@@ -118,6 +132,7 @@ module Gui
     // Add all the items.
     mainWindow.Controls.Add newGameButton
     mainWindow.Controls.Add newAiGameButton
+    mainWindow.Controls.Add clearButton
     mainWindow.Controls.Add chooseMatches
     mainWindow.Controls.Add makeDrawButton
     mainWindow.Controls.Add showSettingsButton
@@ -171,6 +186,11 @@ module Gui
             mainWindow.Size <- Size(520,500)
         optionsShown <- not optionsShown
         ()
+
+    let clearHandler _ =
+        printfn "Clearing"
+        AsyncEventQueue.instance.Post Clear
+    clearButton.Click.Add clearHandler
 
     let downloadButtonHandler _ =
         AsyncEventQueue.instance.Post (Download (urlBox.Text))

@@ -71,6 +71,10 @@ module GameController
 
             Gui.toggleDrawing false
 
+            Gui.showButtons [Gui.newAiGameButton;Gui.newGameButton]
+            Gui.hideButtons [Gui.clearButton]
+            //Gui.disableButtons [Gui.newGameButton;Gui.newAiGameButton]
+
 
             let! msg = q.Receive()
             match msg with
@@ -98,6 +102,8 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
+            Gui.hideButtons [Gui.newAiGameButton;Gui.newGameButton]
+            Gui.showButtons [Gui.clearButton]
             //Gui.toggleDrawing true
             let! msg = q.Receive()
             match msg with
@@ -114,6 +120,7 @@ module GameController
                     else
                         return! ready(newGameState)
                 | Clear         ->
+                    Gui.update []
                     return! menu()
                 | NewGame         -> return! ready(setupNewGame(false))
                 | NewAiGame       -> return! ready(setupNewGame(true))
