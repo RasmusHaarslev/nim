@@ -37,13 +37,30 @@ module Gui
     // Shouldn't be editable.
     logWindow.ReadOnly <- true
 
+    (*
+     * Add log message to logtextwindow
+     * Fun type: string -> unit
+     *)
+    let addLogMessage msg =
+        logWindow.Text <- (logWindow.Text + "\n" + msg)
+
+    (*
+     * Enable/disable drawing.
+     * Fun type: boolean -> unit
+     *)    
+    let toggleDrawing b = 
+        makeDrawButton.Enabled <- b
+        chooseMatches.ReadOnly <- not b
+
+
     
-    (* This list is keeping track of how many heaps are added for render, so
-     * that we can correctly track the heap selected by the heap.
+    (* These mutable variables are all used to keep track of state.
+     * They were deemed too trivial or unsuitable to result in a node in our automaton.
      *)
     let mutable selectedHeap        = -1
     let mutable selectedNumMatches  = 1
     let mutable optionsShown        = false
+
     (* Given a list of integers of size n,
      * creates n radiobuttons.
      * The integers in the list is used as label for each button.
@@ -51,7 +68,7 @@ module Gui
      * fun type: int list -> unit
      *)
     let populateHeapPanel heaps =
-        printfn "Populating panel with"
+        printfn "Populating panel"
         let rec inner heaps yPos count = 
             match heaps with
             | []        -> ()
@@ -59,10 +76,12 @@ module Gui
                 let rad = new RadioButton(Text=x.ToString(),Top=yPos,Left=30)
                 let radioSelectHandler event =
                     selectedHeap <- count
+                    toggleDrawing true
                     //AsyncEventQueue.instance.Post (AsyncEventQueue.SelectHeap count)
 
                 rad.Click.Add(radioSelectHandler)
                 heapPanel.Controls.Add rad
+                //radioButtonList <- radioButtonList @ [rad]
                 inner xs (yPos + 20) (count + 1)
 
         in            
@@ -120,6 +139,7 @@ module Gui
             | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
             | _,_        -> 
                 AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
+                toggleDrawing false
                 selectedHeap <- 0
                 
 
@@ -138,13 +158,6 @@ module Gui
         optionsShown <- not optionsShown
         ()
 
-    let addLogMessage msg =
-        logWindow.Text <- (logWindow.Text + "\n" + msg)
-
-    let toggleDrawing b = 
-        logWindow.Text <- sprintf "Draw Toggled to: %b" b
-        makeDrawButton.Enabled <- b
-        chooseMatches.ReadOnly <- not b
 
         
 
