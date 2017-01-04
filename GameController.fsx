@@ -87,12 +87,12 @@ module GameController
             match msg with
                 | Move (a,b)    ->
                     let logMsg = sprintf "Move: (%d,%d)" a b
-                    Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)  
-                    
+                    Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)
+
                     let newGameState = move (a,b) gameState
 
-                    
-                    if gameState.AiEnabled 
+
+                    if gameState.AiEnabled
                     then
                         return! aiReady(newGameState)
                     else
@@ -116,7 +116,7 @@ module GameController
 
             printfn "AiMove: %A" moveTupl
             let logMsg = sprintf "AI Move: %A" moveTupl
-            Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)  
+            Gui.logWindow.Text <- (Gui.logWindow.Text + "\n" + logMsg)
             let ns = move moveTupl gameState
             return! ready(ns)
         }
@@ -127,3 +127,4 @@ module GameController
             else printfn "Player 1 has won!"
             //Gui.win gameState
             return! menu()
+        }
