@@ -4,18 +4,20 @@ module GameController
     #load "Gui.fsx"
     #load "HeapsZipper.fsx"
     #load "Ai.fsx"
+    #load "types.fsx"
 
     open Gui
     open AsyncEventQueue
     open HeapsZipper
     open Ai
+    open Types
 
     let rand = System.Random()
 
     type GameState = {
         TurnBit: bool;
         Heap: int list;
-        Ai: Ai.AiType
+        Ai: AiType
     }
 
     //let mutable gameState = {}
