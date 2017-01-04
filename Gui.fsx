@@ -42,7 +42,7 @@ module Gui
      * that we can correctly track the heap selected by the heap.
      *)
     let mutable selectedHeap        = -1
-    let mutable selectedNumMatches  = -1
+    let mutable selectedNumMatches  = 1
     let mutable optionsShown        = false
     (* Given a list of integers of size n,
      * creates n radiobuttons.
@@ -80,6 +80,7 @@ module Gui
         ()
 
     let update heaps =
+        chooseMatches.Text <- selectedNumMatches.ToString()
         clearHeapPanel()
         populateHeapPanel heaps
 
@@ -117,7 +118,10 @@ module Gui
         match selectedHeap,selectedNumMatches with
             | -1,_       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
             | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
-            | _,_        -> AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
+            | _,_        -> 
+                AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
+                selectedHeap <- 0
+                
 
     makeDrawButton.Click.Add(makeDrawHandler)
 
@@ -133,6 +137,9 @@ module Gui
             mainWindow.Size <- Size(520,500)
         optionsShown <- not optionsShown
         ()
+
+    let addLogMessage msg =
+        logWindow.Text <- (logWindow.Text + "\n" + msg)
         
     showSettingsButton.Click.Add showOptionsHandler
 

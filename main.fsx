@@ -11,10 +11,5 @@ open Ai
 open Gui
 open GameController
 
-
-
-// We can initialize the Gui state here.
-//Gui.populateHeapPanel [222;23234;1111;23;5]
-
 Async.StartImmediate (GameController.menu())
 Application.Run(Gui.mainWindow);
