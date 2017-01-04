@@ -57,9 +57,18 @@ module GameController
         in
             match gameState.Ai with
             | None      -> failwith "There is no AI!"
-            | Easy      -> move
-            | Medium    -> move
-            | Hard      -> move
+            | Easy      ->
+                if rand.Next(1, 100) > 25
+                then (fst move, snd move + rand.Next(1, 5))
+                else move
+            | Medium    ->
+                if rand.Next(1, 100) > 50
+                then (fst move, snd move + rand.Next(1, 5))
+                else move
+            | Hard      ->
+                if rand.Next(1, 100) > 75
+                then (fst move, snd move + rand.Next(1, 5))
+                else move
             | Godlike   -> move
 
     let checkWin gs =
