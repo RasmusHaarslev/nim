@@ -8,17 +8,25 @@ open HeapsZipper
 
 
 type GameState =
-    { TurnBit: bool
-    ; HeapsZipper: HeapsZipper.HeapsZipper
-    ; AiEnabled: bool // kan laves til et modul
+    { TurnBit : bool
+    ; HeapsZipper : HeapsZipper.HeapsZipper
+    ; AiEnabled : bool // kan laves til et modul
+    ; Write : string
     }
 
 
 let initialState =
     { TurnBit = true
     ; HeapsZipper = HeapsZipper.initialModel // kun til tests
-    ; AiEnabled = false;
+    ; AiEnabled = false
+    ; Write = "1"
     }
+
+// for parsing Int active patterns
+let (|Int|_|) str =
+   match System.Int32.TryParse(str) with
+   | (true,int) -> Some(int)
+   | _ -> None
 
 
 let q = AsyncEventQueue.instance
@@ -31,45 +39,80 @@ let rec menu() =
         // kun gui variable skal komme fra gui
         // update bør ske på det step man er ved.. lidt æregeligt med hvordan vi chekker if someone won
 
-        Gui.clearHeapsZipper()
-
         let! msg = q.Receive()
 
         match msg with
             | AsyncEventQueue.NewGame ->
-                return! ready(state)
+                return! draw(state)
             | _ ->
                 failwith "Menu: Unexpected Message"
     }
 
+and draw(initialState) =
+
+      //Gui.clearHeapsZipper
+      //denne function skal opdateres vi skal undnytte zipper
+      Gui.clearHeapsZipper()
+      Gui.drawHeapsFromList(HeapsZipper.toList initialState.HeapsZipper)
+      Gui.setWrite(initialState.Write)
+
+      let state = initialState
+
+      ready(state)
+
+
 and ready(initialState) =
     async {
-
-        //Gui.clearHeapsZipper
-        Gui.drawHeapsFromList(HeapsZipper.toList initialState.HeapsZipper)
 
         let! msg = q.Receive()
 
         match msg with
-            | AsyncEventQueue.Take n ->
 
-                let heapsZipper =
-                    HeapsZipper.subtract n initialState.HeapsZipper
+            | AsyncEventQueue.Take ->
 
-                let turnBit =
-                    not initialState.TurnBit
+                // måske gå til switch state
+                let state = initialState
 
-                // det her er en fucked structur
-                let state = { initialState with HeapsZipper = heapsZipper; TurnBit = turnBit }
+                match state with
 
-                return! ready(state)
+                    | { Write = Int b } ->
+                        let heapsZipper =
+                            HeapsZipper.subtract b initialState.HeapsZipper
 
-            | AsyncEventQueue.NewGame ->
-                return! menu()
+                        let turnBit =
+                            not initialState.TurnBit
+
+                        // det her er en fucked structur
+                        let state =
+                          { initialState
+                              with
+                                  HeapsZipper = heapsZipper;
+                                  TurnBit = turnBit
+                          }
+
+                        return! draw(state)
+
+                    | _ ->
+                        failwith "Write: Unexpected Message"
+
+            | AsyncEventQueue.Write str ->
+
+                let state = { initialState with Write = str }
+
+                match state with
+
+                    | { Write = Int b } ->
+                        return! ready(state)
+
+                    | _ ->
+                        failwith "Write: Unexpected Message"
+
             //| NewAiGame       -> return! ready(setupNewGame(true))
             | _ ->
                 failwith "Ready: Unexpected Message"
     }
+
+
 
 
 
@@ -106,7 +149,7 @@ and aiReady(gameState) =
         *)
     }
 
-and winGame(gameState) =
+and wingame(gamestate) =
     async {
-        failwith "Not implemented"
+        failwith "not implemented"
     }

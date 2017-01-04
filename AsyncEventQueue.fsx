@@ -25,7 +25,8 @@ type AsyncEventQueue<'T>() =
 
 type Message =
     | NewGame
-    | Take of int
+    | Take
+    | Write of String
 //  | Error
 //  | SelectHeap of int
 //  | NewAiGame

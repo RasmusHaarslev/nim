@@ -28,13 +28,16 @@ let makeDrawButton =
 let chooseMatches =
     new TextBox(Location = Point(150,420),Size = Size(200,25))
 
+
 mainWindow.Controls.Add(newGameButton)
 //mainWindow.Controls.Add(newAiGameButton)
 mainWindow.Controls.Add(heapsPanel)
 mainWindow.Controls.Add(makeDrawButton)
 mainWindow.Controls.Add(chooseMatches)
 
-newGameButton.Click.Add(fun _ -> q.Post AsyncEventQueue.NewGame)
+let newGameHandler _ =
+    q.Post AsyncEventQueue.NewGame
+
 
 // kan måske argumentere for den her skal have argument med..
 // så kan man også slå den sammen med newgame
@@ -42,32 +45,18 @@ newGameButton.Click.Add(fun _ -> q.Post AsyncEventQueue.NewGame)
 newAiGameButton.Click.Add(fun _ -> q.Post AsyncEventQueue.NewAiGame)
 *)
 
-
-
-
-//VI SKAL HAVE MANGE FLERE STATES
-// HVERGANG DU SKRIVER NOGET SKAL DER KOMME EN MESSAGE INDHOLDENDEDET det der står i textfetl
-// så opdatere man textfelt..
-// og så vurdere man new states..
-
 let chooseMatchesHandler _ =
-    selectedNumMatches <- 
-        try
-            int chooseMatches.Text
-        with
-            | _ as d -> 
-                printfn "Could not parse integer: %s" chooseMatches.Text
-                -1        
+    q.Post (AsyncEventQueue.Write chooseMatches.Text)
+
+
+let makeDrawHandler _ =
+    q.Post (AsyncEventQueue.Take)
+
+
+newGameButton.Click.Add(newGameHandler)
+makeDrawButton.Click.Add(makeDrawHandler)
 
 chooseMatches.TextChanged.Add(chooseMatchesHandler)
-
-
-
-
-
-
-
-
 
 
 
@@ -80,7 +69,7 @@ let drawHeapsFromList(xs) =
     for x in xs do
 
         let radioButton =
-            new RadioButton(Text=x.ToString(),Top=y,Left=30)
+            new RadioButton(Checked=true,Text=x.ToString(),Top=y,Left=30)
 
         //kan godt move zipper her
         (*let radioSelectHandler _ =
@@ -98,26 +87,13 @@ let clearHeapsZipper() =
     heapsPanel.Controls.Clear()
 
 
+let setWrite(str) =
+    chooseMatches.Text <- str
+
 (*i
-let makeDrawHandler _ =
-    let numMatches = 
-        try
-            int chooseMatches.Text
-        with
-            | _ as d -> 
-                printfn "Could not parse integer: %s" chooseMatches.Text
-                -1
-
-    printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
-
-    match selectedHeap,numMatches with
-        | -1,_       -> GameController.ev.Post GameController.Error
-        | _,-1       -> GameController.ev.Post GameController.Error
-        | _,_        -> GameController.ev.Post (GameController.Move (selectedHeap, numMatches))
 
 *)
 
-//makeDrawButton.Click.Add(makeDrawHandler)
 
 
 
