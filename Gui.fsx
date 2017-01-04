@@ -1,6 +1,9 @@
 module Gui
 
     #load "AsyncEventQueue.fsx"
+    #load "types.fsx"
+
+    open Types
     open AsyncEventQueue
     open System.Windows.Forms
     open System.Drawing
@@ -166,12 +169,12 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let newGameHandler _ =
-        AsyncEventQueue.instance.Post NewGame
+        AsyncEventQueue.instance.Post Types.NewGame
     newGameButton.Click.Add(newGameHandler)
 
 
     let newAiGameHandler _ =
-        AsyncEventQueue.instance.Post NewAiGame
+        AsyncEventQueue.instance.Post Types.NewAiGame
     newAiGameButton.Click.Add(newAiGameHandler)
 
     (* Define and add handlerFunction for newGameButton
@@ -183,10 +186,10 @@ module Gui
         printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
 
         match selectedHeap,selectedNumMatches with
-            | -1,_       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
-            | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
+            | -1,_       -> AsyncEventQueue.instance.Post Types.Error
+            | _,-1       -> AsyncEventQueue.instance.Post Types.Error
             | _,_        ->
-                AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
+                AsyncEventQueue.instance.Post (Types.Move (selectedHeap, selectedNumMatches))
                 toggleDrawing false
                 selectedHeap <- 0
 
@@ -208,11 +211,11 @@ module Gui
 
     let clearHandler _ =
         printfn "Clearing"
-        AsyncEventQueue.instance.Post Clear
+        AsyncEventQueue.instance.Post Types.Clear
     clearButton.Click.Add clearHandler
 
     let downloadButtonHandler _ =
-        AsyncEventQueue.instance.Post (Download (urlBox.Text))
+        AsyncEventQueue.instance.Post (Types.Download (urlBox.Text))
     downloadButton.Click.Add downloadButtonHandler
 
 
