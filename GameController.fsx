@@ -121,9 +121,11 @@ module GameController
         }
     and winGame(gameState) =
         async {
+            Gui.update gameState.Heap
+
             if not gameState.TurnBit
-            then printfn "Player 2 (or AI) has won!"
-            else printfn "Player 1 has won!"
+            then Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 2 (or AI) has won!")
+            else Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 1 has won!")
             //Gui.win gameState
             return! menu()
         }
