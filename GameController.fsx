@@ -11,18 +11,12 @@ module GameController
     open Ai
 
     let rand = System.Random()
-    
-    type Difficulty =
-        | Easy
-        | Medium
-        | Hard
-        | Godlike
 
     type GameState = {
         TurnBit: bool;
         Heap: int list;
         AiEnabled: bool
-        Difficulty: Difficulty
+        Difficulty: Ai.Difficulty
     }
 
 
@@ -54,6 +48,22 @@ module GameController
             AiEnabled = gs.AiEnabled;
             Difficulty = gs.Difficulty
         }
+
+    (* Finds the next play-move for the AI
+     *)
+    let aiMove gameState =
+        let m = findm gameState.Heap
+
+        let move =
+            if m = 0
+            then (maxIndexBy gameState.Heap, 1)
+            else (findMove gameState.Heap m)
+        in
+            match gameState.Difficulty with
+            | Easy       -> move
+            | Medium     -> move
+            | Hard       -> move
+            | Godlike    -> move
 
     let checkWin gs =
         gs.Heap.Length < 1
@@ -134,7 +144,7 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
-            let moveTupl = Ai.aiMove gameState
+            let moveTupl = aiMove gameState
 
             printfn "AiMove: %A" moveTupl
             Gui.addLogMessage (sprintf "AI Move: %A" moveTupl)

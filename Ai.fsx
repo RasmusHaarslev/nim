@@ -1,8 +1,14 @@
 module Ai
     #load "AsyncEventQueue.fsx"
-    #load "GameController.fsx"
     open AsyncEventQueue
-    open GameController
+
+
+
+    type Difficulty =
+        | Easy
+        | Medium
+        | Hard
+        | Godlike
 
     (* Recursively xorbs all elements in the list heap
      * m = a0 ^^^ a1 ^^^ ... ^^^ ax
@@ -39,19 +45,3 @@ module Ai
         |> List.mapi (fun i x -> i,  x)
         |> List.maxBy snd
         |> fst
-
-    (* Finds the next play-move for the AI
-     *)
-    let aiMove gameState =
-        let m = findm gameState.Heap
-
-        let move =
-            if m = 0 
-            then (maxIndexBy gameState.Heap, 1)
-            else (findMove gameState.Heap m)
-        in
-            match gameState.Difficulty with
-            | GameController.Easy       -> move
-            | GameController.Medium     -> move
-            | GameController.Hard       -> move
-            | GameController.Godlike    -> move
