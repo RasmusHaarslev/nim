@@ -2,9 +2,8 @@ module Ai
     #load "AsyncEventQueue.fsx"
     open AsyncEventQueue
 
-
-
-    type Difficulty =
+    type AiType =
+        | None
         | Easy
         | Medium
         | Hard

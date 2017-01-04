@@ -15,11 +15,8 @@ module GameController
     type GameState = {
         TurnBit: bool;
         Heap: int list;
-        AiEnabled: bool
-        Difficulty: Ai.Difficulty
+        Ai: Ai.AiType
     }
-
-
 
     //let mutable gameState = {}
 
@@ -45,8 +42,7 @@ module GameController
         in {
             TurnBit = not gs.TurnBit;
             Heap = newHeap;
-            AiEnabled = gs.AiEnabled;
-            Difficulty = gs.Difficulty
+            Ai = gs.Ai
         }
 
     (* Finds the next play-move for the AI
@@ -59,20 +55,20 @@ module GameController
             then (maxIndexBy gameState.Heap, 1)
             else (findMove gameState.Heap m)
         in
-            match gameState.Difficulty with
-            | Easy       -> move
-            | Medium     -> move
-            | Hard       -> move
-            | Godlike    -> move
+            match gameState.Ai with
+            | None      -> failwith "There is no AI!"
+            | Easy      -> move
+            | Medium    -> move
+            | Hard      -> move
+            | Godlike   -> move
 
     let checkWin gs =
         gs.Heap.Length < 1
 
-    let setupNewGame (enableAI) = {
+    let setupNewGame (AiState) = {
             TurnBit = if rand.Next(0, 1) = 1 then true else false;
             Heap = [for i in 1 .. rand.Next(2, 4) -> rand.Next(1, 10)];
-            AiEnabled = enableAI;
-            Difficulty = Godlike
+            Ai = AiState
         }
 
     let q = AsyncEventQueue.instance
@@ -89,12 +85,12 @@ module GameController
             let! msg = q.Receive()
             match msg with
                 | NewGame   ->
-                    let ng = setupNewGame(false)
+                    let ng = setupNewGame(None)
                     Gui.addLogMessage "New Game Started"
                     printfn "%A" ng.Heap
                     return! ready(ng)
                 | NewAiGame ->
-                    let ng = setupNewGame(true)
+                    let ng = setupNewGame(Godlike)
                     Gui.addLogMessage "New AI Game Started"
                     if ng.TurnBit
                     then
@@ -123,18 +119,13 @@ module GameController
 
                     let newGameState = move (a,b) gameState
 
-
-                    if gameState.AiEnabled
-                    then
-                        return! aiReady(newGameState)
-                    else
-                        return! ready(newGameState)
+                    match gameState.Ai with
+                    | None  -> return! ready(newGameState)
+                    | _     -> return! aiReady(newGameState)
                 | Clear         ->
                     Gui.update []
                     return! menu()
-                | NewGame         -> return! ready(setupNewGame(false))
-                | NewAiGame       -> return! ready(setupNewGame(true))
-                | _                         -> failwith "Ready: Unexpected Message"
+                | _             -> failwith "Ready: Unexpected Message"
         }
     and aiReady(gameState) =
         async {
