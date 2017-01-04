@@ -58,11 +58,12 @@ let rec merge xs ys =
 
 // this is onlyneeded coz no funtional view
 // Heaps to list of ints
-let rec toList xs =
-    match xs with
+let toIndexedList xs =
+    let rec aux i = function
         | EmptyHeaps -> []
         | LinkedHeaps (h, tl) ->
-            (Heap.toInt h) :: (toList tl)
+            (Heap.toInt h, i) :: (aux (i+1) tl)
+    aux 1 xs
 
 
 //find maxheap

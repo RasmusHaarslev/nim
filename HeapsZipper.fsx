@@ -1,4 +1,5 @@
 #load "Heaps.fsx"
+
 open Heaps
 
 
@@ -42,40 +43,61 @@ let insert y (HeapsZipper (prev, x, remaining)) =
     HeapsZipper (Heaps.cons y prev, x, remaining)
 
 
+
 // this is onlyneeded coz no funtional view
 // HeapsZipper toList of int
-let toList (HeapsZipper (prev, x, remaining)) =
-        Heaps.cons x remaining
-            |> Heaps.merge prev
-            |> Heaps.toList
+let toIndexedList xs =
+    let rec aux i = function
+        | (HeapsZipper (prev, x, remaining)) when Heaps.isEmpty prev ->
+            (Heap.toInt x, 0) :: (Heaps.toIndexedList remaining)
+
+        | (HeapsZipper ( prev, x, remaining)) ->
+            (Heap.toInt (Heaps.hd prev), i) ::
+                (aux (i-1) (HeapsZipper (Heaps.tl prev, x, remaining)))
+
+    //yeahhhh!
+    List.sortBy (fun (_, y) -> -y) (aux (-1) xs)
 
 
 // initialModel for testing purposes
 let initialModel =
     init (Heap.init 1)
-        |> insert (Heap.init 2)
-        |> insert (Heap.init 3)
         |> insert (Heap.init 4)
+        |> insert (Heap.init 6)
+        |> insert (Heap.init 9)
 
 
 
-//fix tomorrow
+
+//fix tomorrow these tomorrow
+//fix tomorrow these tomorrow
+//fix tomorrow these tomorrow
 let subtract i xs =
     let (HeapsZipper (prev, x, remaining)) = xs
     HeapsZipper (prev, Heap.subtract i x, remaining)
+
+
+let rec move n xs =
+    match n with
+      | n when n > 0 ->
+          move (n-1) (forward xs)
+      | n when n < 0 ->
+          move (n+1) (backward xs)
+      | n when n = 0 ->
+          xs
+      // wtf
+      | _ ->
+          failwith "n is not integer ?"
 
 (*
 init (Heap.init 1)
     |> insert (Heap.init 2)
     |> insert (Heap.init 3)
-    |> backward
-    |> backward
-    |> backward
-    |> forward
-    |> forward
-    |> toList
+    |> move 2
+    |> move -2
     |> printfn "%A"
 *)
+
 
 
 // NOT happy with these shit functions below....

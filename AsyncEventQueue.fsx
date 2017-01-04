@@ -27,6 +27,7 @@ type Message =
     | NewGame
     | Take
     | Write of String
+    | SelectHeap of int
 //  | Error
 //  | SelectHeap of int
 //  | NewAiGame

@@ -59,29 +59,26 @@ makeDrawButton.Click.Add(makeDrawHandler)
 chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
 
-
 // this is bad compared to elm
 // there should be a state on our model for window or this is very not functional
 // kan stadig godt benyttes som en zipper men altså whats the point.
 let drawHeapsFromList(xs) =
     let mutable y = 0
-    let mutable count = 0
-    for x in xs do
+    for (x, i) in xs do
+
+        let check = not(System.Convert.ToBoolean(i : int))
 
         let radioButton =
-            new RadioButton(Checked=true,Text=x.ToString(),Top=y,Left=30)
+            new RadioButton(Checked=check,Text=x.ToString(),Top=y,Left=30)
 
-        //kan godt move zipper her
-        (*let radioSelectHandler _ =
-            q.Post (AsyncEventQueue.SelectHeap count)
+        let radioSelectHandler _ =
+            q.Post (AsyncEventQueue.SelectHeap i)
 
         radioButton.Click.Add(radioSelectHandler)
-        *)
         heapsPanel.Controls.Add(radioButton)
 
+        //mutable
         y <- y + 20
-        count <- count + 1
-
 
 let clearHeapsZipper() =
     heapsPanel.Controls.Clear()
@@ -89,21 +86,3 @@ let clearHeapsZipper() =
 
 let setWrite(str) =
     chooseMatches.Text <- str
-
-(*i
-
-*)
-
-
-
-
-
-(* handlerFunction for the text field to choose matchNum
- * Error handling at this point is annoying. I suggest we don't!
- * If the users change can't be parsed as int, we set selected amount of 
- * matches to -1, so that we raise an error later.
- * 
- * MAYBE NO ERROR HANDLING SHOULD BE DONE IN THIS FILE? Need discussion.
- *
- * fun type: System.EventArgs -> unit
- *)

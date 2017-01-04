@@ -53,7 +53,7 @@ and draw(initialState) =
       //Gui.clearHeapsZipper
       //denne function skal opdateres vi skal undnytte zipper
       Gui.clearHeapsZipper()
-      Gui.drawHeapsFromList(HeapsZipper.toList initialState.HeapsZipper)
+      Gui.drawHeapsFromList(HeapsZipper.toIndexedList initialState.HeapsZipper)
       Gui.setWrite(initialState.Write)
 
       let state = initialState
@@ -84,16 +84,35 @@ and ready(initialState) =
 
                         // det her er en fucked structur
                         let state =
-                          { initialState
-                              with
-                                  HeapsZipper = heapsZipper;
-                                  TurnBit = turnBit
-                          }
+                            { initialState
+                                with
+                                    HeapsZipper = heapsZipper;
+                                    TurnBit = turnBit
+                            }
 
                         return! draw(state)
 
                     | _ ->
                         failwith "Write: Unexpected Message"
+
+            | AsyncEventQueue.SelectHeap n ->
+
+                let heapsZipper =
+                    HeapsZipper.move n initialState.HeapsZipper
+
+                printfn "%A" n
+
+                let state =
+                    { initialState with HeapsZipper = heapsZipper }
+
+
+                  (*
+                match state with
+
+                    | 
+                    *)
+
+                return! draw(state)
 
             | AsyncEventQueue.Write str ->
 
