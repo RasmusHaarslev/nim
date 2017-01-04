@@ -92,6 +92,7 @@ module GameController
                     let ng = setupNewGame(aiType)
                     Gui.setDiffEnabled false
                     Gui.addLogMessage "New Game Started"
+                    Gui.setWinnerMsgEnabled false
                     printfn "%A" ng.Heap
                     if ng.TurnBit
                     then
@@ -148,8 +149,12 @@ module GameController
             Gui.toggleDrawing false
 
             if not gameState.TurnBit
-            then Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 2 (or AI) has won!")
-            else Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 1 has won!")
-            //Gui.win gameState
+            then
+                Gui.setWinnerMsg "Player 2 (or AI) has won!"
+                Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 2 (or AI) has won!")
+            else
+                Gui.setWinnerMsg "Player 1 has won!"
+                Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 1 has won!")
+            Gui.setWinnerMsgEnabled true
             return! menu()
         }

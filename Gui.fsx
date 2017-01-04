@@ -10,7 +10,7 @@ module Gui
     mainWindow.FormBorderStyle <- FormBorderStyle.FixedSingle
 
     // Add a panel, to group up all the radio buttons
-    let heapPanel = new Panel(Size=Size(270,390),Top=10,Left=10)
+    let heapPanel = new Panel(Size=Size(270,350),Top=10,Left=10)
     heapPanel.AutoScroll <- true
     heapPanel.BackColor <- Color.LightGray
     let radioBox = new GroupBox(Size=Size(500,390),Top=10,Left=10)
@@ -50,6 +50,9 @@ module Gui
 
     let downloadButton =
         new Button(Location = Point(295, 435), Size = Size(205, 22), Text = "Download")
+
+    let winnerMessage = new Label(Location = Point(50,365),Size = Size(190,40),Text = "")
+    winnerMessage.Font <- new Font("Arial", emSize = 18.0f)
 
     (*
      * RadioButtons for changing difficulty.
@@ -97,6 +100,12 @@ module Gui
         radioButtonDiffMedium.Enabled <- b
         radioButtonDiffHard.Enabled <- b
         radioButtonDiffGodlike.Enabled <- b
+
+    let setWinnerMsgEnabled b = 
+        winnerMessage.Visible <- b
+
+    let setWinnerMsg s = 
+        winnerMessage.Text <- s 
 
     (* These mutable variables are all used to keep track of state.
      * They were deemed too trivial or unsuitable to result in a node in our automaton.
@@ -166,6 +175,7 @@ module Gui
     mainWindow.Controls.Add radioButtonDiffGodlike
     mainWindow.Controls.Add radioButtonDiffEasy
     mainWindow.Controls.Add radioButtonDiffHard
+    mainWindow.Controls.Add winnerMessage
 
 
 
