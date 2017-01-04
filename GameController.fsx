@@ -1,5 +1,11 @@
 module GameController
 
+    #load "types.fsx"
+    #load "AsyncEventQueue.fsx"
+    #load "Ai.fsx"
+    #load "Gui.fsx"
+    #load "GameController.fsx"
+
     open Types
     open Gui
     open AsyncEventQueue
@@ -128,7 +134,6 @@ module GameController
             then return! winGame(gameState)
             else
 
-            // Evt make color change to indicate ready.
             Gui.update gameState.Heap
             let moveTupl = aiMove gameState
 

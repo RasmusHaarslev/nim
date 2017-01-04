@@ -221,7 +221,8 @@ module Gui
     clearButton.Click.Add clearHandler
 
     let downloadButtonHandler _ =
-        AsyncEventQueue.instance.Post (Download (urlBox.Text))
+        //AsyncEventQueue.instance.Post (Download (urlBox.Text))
+        ()
     downloadButton.Click.Add downloadButtonHandler
 
 
@@ -237,8 +238,6 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let chooseMatchesHandler _ =
-        // Not sure if I should add event to queue here.
-        // This will be more clear when we make the automaton I think.
         selectedNumMatches <-
             try
                 if int chooseMatches.Text = 0
@@ -256,13 +255,7 @@ module Gui
     chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
 
-    (*
-     * Handler for change difficulty.
-     radioButtonDiffEasy
-radioButtonDiffMedium
-radioButtonDiffHard
-radioButtonDiffGodlike
-     *
+    (* Handlers for changing difficulty.
      *)
     let easyDiffHandler _ =
         printfn "Easy Difficulty Enabled"

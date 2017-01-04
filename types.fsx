@@ -10,7 +10,6 @@ module Types
     type Message =
         | Move of int*int
         | Error
-        | SelectHeap of int
         | NewGame of AiType
         | Clear
         | Download of string
