@@ -140,7 +140,14 @@ module Gui
 
     let addLogMessage msg =
         logWindow.Text <- (logWindow.Text + "\n" + msg)
+
+    let toggleDrawing b = 
+        logWindow.Text <- sprintf "Draw Toggled to: %b" b
+        makeDrawButton.Enabled <- b
+        chooseMatches.ReadOnly <- not b
+
         
+
     showSettingsButton.Click.Add showOptionsHandler
 
     (* handlerFunction for the text field to choose matchNum

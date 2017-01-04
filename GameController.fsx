@@ -57,6 +57,9 @@ module GameController
     let rec menu() =
         async {
 
+            Gui.toggleDrawing false
+
+
             let! msg = q.Receive()
             match msg with
                 | NewGame   ->
@@ -83,6 +86,7 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
+            Gui.toggleDrawing true
             let! msg = q.Receive()
             match msg with
                 | Move (a,b)    ->
@@ -111,7 +115,6 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
-
             let moveTupl = Ai.aiMove gameState.Heap
 
             printfn "AiMove: %A" moveTupl
@@ -122,6 +125,7 @@ module GameController
     and winGame(gameState) =
         async {
             Gui.update gameState.Heap
+            Gui.toggleDrawing false
 
             if not gameState.TurnBit
             then Gui.logWindow.Text <- (Gui.logWindow.Text + "\nPlayer 2 (or AI) has won!")
