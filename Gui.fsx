@@ -49,6 +49,7 @@ module Gui
      * Fun type: boolean -> unit
      *)    
     let toggleDrawing b = 
+        printfn "Toggling drawing"
         makeDrawButton.Enabled <- b
         chooseMatches.ReadOnly <- not b
 
@@ -187,7 +188,8 @@ module Gui
             with
                 | _ as d -> 
                     printfn "Could not parse integer: %s" chooseMatches.Text
-                    -1        
+                    chooseMatches.Text <- "1"
+                    1        
     chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
     

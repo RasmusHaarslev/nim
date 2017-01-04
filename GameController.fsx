@@ -86,7 +86,7 @@ module GameController
 
             // Evt make color change to indicate ready.
             Gui.update gameState.Heap
-            Gui.toggleDrawing true
+            //Gui.toggleDrawing true
             let! msg = q.Receive()
             match msg with
                 | Move (a,b)    ->
