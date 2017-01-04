@@ -25,17 +25,27 @@ module Gui
     let makeDrawButton =
       new Button(Location = Point(115,435), Size=Size(100,22),Text = "Draw!")
 
-    let chooseMatches = 
+    let chooseMatches =
       new TextBox(Location = Point(115,410),Size = Size(165,22))
 
     let showSettingsButton =
       new Button(Location = Point(217,435), Size=Size(60,22),Text = "Options")
 
-    let logWindow = 
+    let logWindow =
       new TextBox(Location = Point(295,10),Size = Size(205,200))
     logWindow.Multiline <- true
     // Shouldn't be editable.
     logWindow.ReadOnly <- true
+
+    let urlLabel =
+        new Label(Location = Point(300, 265), Size = Size(205, 15), Text = "Download from URL")
+
+    let urlBox =
+      new TextBox(Location = Point(295,280), Size = Size(205,150))
+    urlBox.Multiline <- true
+
+    let downloadButton =
+        new Button(Location = Point(295, 435), Size = Size(205, 22), Text = "Download")
 
     (*
      * Add log message to logtextwindow
@@ -47,14 +57,14 @@ module Gui
     (*
      * Enable/disable drawing.
      * Fun type: boolean -> unit
-     *)    
-    let toggleDrawing b = 
+     *)
+    let toggleDrawing b =
         printfn "Toggling drawing"
         makeDrawButton.Enabled <- b
         chooseMatches.ReadOnly <- not b
 
 
-    
+
     (* These mutable variables are all used to keep track of state.
      * They were deemed too trivial or unsuitable to result in a node in our automaton.
      *)
@@ -65,12 +75,12 @@ module Gui
     (* Given a list of integers of size n,
      * creates n radiobuttons.
      * The integers in the list is used as label for each button.
-     * 
+     *
      * fun type: int list -> unit
      *)
     let populateHeapPanel heaps =
         printfn "Populating panel"
-        let rec inner heaps yPos count = 
+        let rec inner heaps yPos count =
             match heaps with
             | []        -> ()
             | x::xs     ->
@@ -85,9 +95,9 @@ module Gui
                 //radioButtonList <- radioButtonList @ [rad]
                 inner xs (yPos + 20) (count + 1)
 
-        in            
+        in
             inner heaps 0 0
-            
+
 
     (* Clears all the radiobuttons from the heap panel
      *
@@ -112,13 +122,16 @@ module Gui
     mainWindow.Controls.Add makeDrawButton
     mainWindow.Controls.Add showSettingsButton
     mainWindow.Controls.Add logWindow
+    mainWindow.Controls.Add urlLabel
+    mainWindow.Controls.Add urlBox
+    mainWindow.Controls.Add downloadButton
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
-     * 
+     *
      * fun type: System.EventArgs -> unit
      *)
-    let newGameHandler _ = 
+    let newGameHandler _ =
         AsyncEventQueue.instance.Post NewGame
     newGameButton.Click.Add(newGameHandler)
 
@@ -129,7 +142,7 @@ module Gui
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
-     * 
+     *
      * fun type: System.EventArgs -> unit
      *)
     let makeDrawHandler _ =
@@ -138,11 +151,11 @@ module Gui
         match selectedHeap,selectedNumMatches with
             | -1,_       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
             | _,-1       -> AsyncEventQueue.instance.Post AsyncEventQueue.Error
-            | _,_        -> 
+            | _,_        ->
                 AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
                 toggleDrawing false
                 selectedHeap <- 0
-                
+
 
     makeDrawButton.Click.Add(makeDrawHandler)
 
@@ -159,16 +172,18 @@ module Gui
         optionsShown <- not optionsShown
         ()
 
+    let downloadButtonHandler _ =
+        AsyncEventQueue.instance.Post (Download (urlBox.Text))
+    downloadButton.Click.Add downloadButtonHandler
 
-        
 
     showSettingsButton.Click.Add showOptionsHandler
 
     (* handlerFunction for the text field to choose matchNum
      * Error handling at this point is annoying. I suggest we don't!
-     * If the users change can't be parsed as int, we set selected amount of 
+     * If the users change can't be parsed as int, we set selected amount of
      * matches to -1, so that we raise an error later.
-     * 
+     *
      * MAYBE NO ERROR HANDLING SHOULD BE DONE IN THIS FILE? Need discussion.
      *
      * fun type: System.EventArgs -> unit
@@ -176,9 +191,9 @@ module Gui
     let chooseMatchesHandler _ =
         // Not sure if I should add event to queue here.
         // This will be more clear when we make the automaton I think.
-        selectedNumMatches <- 
+        selectedNumMatches <-
             try
-                if int chooseMatches.Text = 0 
+                if int chooseMatches.Text = 0
                 then
                     printfn "Choosing 0 matches is not allowed! Cheater!"
                     chooseMatches.Text <- "1"
@@ -186,13 +201,13 @@ module Gui
                 else
                     int chooseMatches.Text
             with
-                | _ as d -> 
+                | d ->
                     printfn "Could not parse integer: %s" chooseMatches.Text
                     chooseMatches.Text <- "1"
-                    1        
+                    1
     chooseMatches.TextChanged.Add(chooseMatchesHandler)
 
-    
-    
+
+
 
     mainWindow.Controls.Add heapPanel
