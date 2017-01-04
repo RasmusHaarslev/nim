@@ -51,6 +51,17 @@ module Gui
         new Button(Location = Point(295, 435), Size = Size(205, 22), Text = "Download")
 
     (*
+     * RadioButtons for changing difficulty.
+     *)
+    // Off is not relevant yet. Need more implementation work
+    //let radioButtonDiffOff = new RadioButton()
+    let radioButtonDiffEasy = new RadioButton(Location = Point(300,245), Text = "Easy")
+    let radioButtonDiffMedium = new RadioButton(Location = Point(350,225), Text = "Medium")
+    let radioButtonDiffHard = new RadioButton(Location = Point(300,225), Text = "Hard")
+    let radioButtonDiffGodlike = new RadioButton(Location = Point(350,245), Text = "Godlike")
+    let difficultyLabel =
+        new Label(Location = Point(300, 215), Size = Size(205, 15), Text = "Choose AI Difficulty")
+    (*
      * Add log message to logtextwindow
      * Fun type: string -> unit
      *)
@@ -138,8 +149,16 @@ module Gui
     mainWindow.Controls.Add showSettingsButton
     mainWindow.Controls.Add logWindow
     mainWindow.Controls.Add urlLabel
+    mainWindow.Controls.Add difficultyLabel
     mainWindow.Controls.Add urlBox
     mainWindow.Controls.Add downloadButton
+
+    mainWindow.Controls.Add radioButtonDiffMedium
+    mainWindow.Controls.Add radioButtonDiffGodlike
+    mainWindow.Controls.Add radioButtonDiffEasy    
+    mainWindow.Controls.Add radioButtonDiffHard
+
+
 
     (* Define and add handlerFunction for newGameButton
      * The handler gets some event type - but it is not used in the example
