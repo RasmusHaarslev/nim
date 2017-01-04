@@ -2,13 +2,6 @@ module Ai
     #load "AsyncEventQueue.fsx"
     open AsyncEventQueue
 
-    type AiType =
-        | None
-        | Easy
-        | Medium
-        | Hard
-        | Godlike
-
     (* Recursively xorbs all elements in the list heap
      * m = a0 ^^^ a1 ^^^ ... ^^^ ax
      *
