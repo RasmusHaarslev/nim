@@ -1,3 +1,4 @@
+#load "types.fsx"
 #load "AsyncEventQueue.fsx"
 #load "Ai.fsx"
 #load "Gui.fsx"

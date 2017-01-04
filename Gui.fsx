@@ -1,7 +1,7 @@
 module Gui
 
-    #load "AsyncEventQueue.fsx"
     #load "types.fsx"
+    #load "AsyncEventQueue.fsx"
 
     open Types
     open AsyncEventQueue
