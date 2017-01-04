@@ -32,7 +32,6 @@ let makeDrawButton =
             MaximumSize=Size(100,50),Text="Draw!")
 
 
-
 mainWindow.Controls.Add(newGameButton)
 mainWindow.Controls.Add(newAiGameButton)
 mainWindow.Controls.Add(menuButton)
@@ -51,9 +50,9 @@ let newAiGameHandler _ =
 let menuHandler _ =
     q.Post AsyncEventQueue.Menu
 
-
 let makeDrawHandler _ =
     q.Post (AsyncEventQueue.Take)
+
 
 newGameButton.Click.Add(newGameHandler)
 newAiGameButton.Click.Add(newAiGameHandler)

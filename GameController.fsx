@@ -10,6 +10,7 @@ open HeapsZipper
 open Ai
 open Helpers
 
+// kunne måske godt tænke mig at have knapper defineret på gamestate..
 type GameState =
     { TurnBit : bool
     ; HeapsZipper : HeapsZipper.HeapsZipper
