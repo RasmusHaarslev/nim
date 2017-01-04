@@ -1,23 +1,24 @@
-module Ai
-    #load "AsyncEventQueue.fsx"
-    open AsyncEventQueue
+type Ai =
+    | SimpleAI
+    | ImprovedAI
 
-    (* Recursively xorbs all elements in the list heap
-     * m = a0 ^^^ a1 ^^^ ... ^^^ ax
-     *
-     * fun type: int list -> int
-     *)
-    let rec findm heap =
+let initSimpleAI = SimpleAI
+
+let initImprovedAI = ImprovedAI
+
+let move heapsZipper = function
+    | SimpleAI ->
+        (1, 1)
+    | ImprovedAI ->
+        (0, 3)
+
+(*
+let rec findm heap =
         match heap with
         | [] -> 0
         | x::xs -> x ^^^ findm xs
 
-    (* Recursively traverses the list heap, and looks for a number, where when
-     * xorb'ed with m, it returns a number smaller than the original number.
-     * Returns a tuple of the index and the number.
-     *
-     * fun type: int list -> int -> int * int
-     *)
+
     let findMove heap m =
         let rec innerFoo heap m idx =
             match heap with
@@ -51,3 +52,4 @@ module Ai
             let (heapIdx, removeCount) = findMove heap m
             in
                 (heapIdx, removeCount)
+                *)

@@ -71,19 +71,6 @@ let toIndexedList xs =
 let focus (HeapsZipper (_, x, _)) =
     Heap.toInt x
 
-// someSubtract
-//  brug active patterns?
-let subtract n (HeapsZipper (prev, x, remaining)) =
-    match Heap.toInt (Heap.subtract n x) with
-        | i when i > 0 ->
-            HeapsZipper (prev, Heap.init i, remaining)
-        | i ->
-              let heaps = Heaps.merge (Heaps.reverse prev) remaining
-
-              if Heaps.isEmpty heaps then
-                  HeapsZipper (Heaps.empty, Heap.init 0, Heaps.empty)
-              else
-                  HeapsZipper (Heaps.empty, Heaps.hd heaps, Heaps.tl heaps)
 
 
 // move curser
@@ -99,15 +86,36 @@ let rec move n xs =
       | _ ->
           failwith "n is not integer ?"
 
+
+// someSubtract
+//  brug active patterns?
+let subtract n (HeapsZipper (prev, x, remaining)) =
+    match Heap.toInt (Heap.subtract n x) with
+        | i when i > 0 ->
+            HeapsZipper (prev, Heap.init i, remaining)
+        | i ->
+              let heaps = Heaps.merge (Heaps.reverse prev) remaining
+
+              if Heaps.isEmpty heaps then
+                  HeapsZipper (Heaps.empty, Heap.init 0, Heaps.empty)
+              else
+                  HeapsZipper (Heaps.empty, Heaps.hd heaps, Heaps.tl heaps)
+
+
+// someSubtract
+//  brug active patterns?
+let subtract2 n m heapsZipper =
+    move n heapsZipper
+        |> subtract m
+
 (*
-init (Heap.init 1)
+init (Heap.init -2)
     |> insert (Heap.init 2)
     |> insert (Heap.init 3)
-    |> move 2
-    |> move -2
+    |> insert (Heap.init 4)
+    |> subtract2 -2 1
     |> printfn "%A"
 *)
-
 
 
 // NOT happy with these shit functions below....

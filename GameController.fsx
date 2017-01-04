@@ -1,24 +1,24 @@
 #load "AsyncEventQueue.fsx"
 #load "Gui.fsx"
 #load "HeapsZipper.fsx"
+#load "Ai.fsx"
 
 open AsyncEventQueue
 open Gui
 open HeapsZipper
-
+open Ai
 
 type GameState =
     { TurnBit : bool
     ; HeapsZipper : HeapsZipper.HeapsZipper
-    ; AiEnabled : bool // kan laves til et modul
+    ; Ai : Ai.Ai option // kan laves til et modul
     ; Write : string
     }
-
 
 let initialState =
     { TurnBit = true
     ; HeapsZipper = HeapsZipper.initialModel // kun til tests
-    ; AiEnabled = false
+    ; Ai = Some Ai.initImprovedAI
     ; Write = "1"
     }
 
@@ -71,6 +71,9 @@ and checkWin(initialState) =
         | _ ->
             switch(state)
 
+and log(initialState) =
+    //implement log
+    switch(initialState)
 
 and switch(initialState) =
 
@@ -86,16 +89,43 @@ and switch(initialState) =
 
 and draw(initialState) =
 
+    let state = initialState
     //Gui.clearHeapsZipper
     //denne function skal opdateres vi skal undnytte zipper
     Gui.clearHeapsZipper()
     Gui.drawHeapsFromList(HeapsZipper.toIndexedList initialState.HeapsZipper)
     Gui.setWrite(initialState.Write)
 
-    let state = initialState
 
-    ready(state)
+    aiReady(state)
 
+and aiReady(initialState) =
+  //kan gå til win
+  //kan gå til win
+  //kan gå til win
+  //skal lave sit move
+  //skal lave sit move
+  //skal lave sit move
+  let state = initialState
+
+  match state with
+     // vi vælger om turnbit starter på false eller true
+      | { Ai = Some ai; TurnBit = a; HeapsZipper = h } when a ->
+
+          // kan ikke lave bad ai
+          // kan ikke lave bad ai
+          let (i, j) = Ai.move h ai
+
+          let heapsZipper =
+              HeapsZipper.subtract2 i j h
+
+          // det her er en fucked structur
+          let state =
+              { state with HeapsZipper = heapsZipper }
+
+          checkWin(state)
+      | _ ->
+          ready(state)
 
 and ready(initialState) =
     async {
@@ -152,27 +182,6 @@ and ready(initialState) =
                 failwith "Ready: Unexpected Message"
     }
 
-
-
-
-and aiReady(gameState) =
-    async {
-        failwith "Not implemented"
-        (*
-        printfn "IN AI MAKE MOVE"
-
-        if Heap.toInt (HeapsZipper.focus gameState.Heap) = 0 then
-            return! winGame(gameState)
-        else
-        Gui.update (HeapsZipper.toList gameState.Heap)
-
-        let moveTupl = Ai.aiMove (HeapsZipper.toList gameState.Heap)
-        printfn "AiMove: %A" moveTupl
-        //Gui.colorNthRadio (fst moveTupl)
-        let ns = move moveTupl gameState
-        return! ready(ns)
-        *)
-    }
 
 and win(gamestate) =
     async {
