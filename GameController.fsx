@@ -14,12 +14,6 @@ module GameController
 
     let rand = System.Random()
 
-    type GameState = {
-        TurnBit: bool;
-        Heap: int list;
-        Ai: AiType
-    }
-
     //let mutable gameState = {}
 
     let rec remove i l =
@@ -91,7 +85,6 @@ module GameController
             Gui.showButtons [Gui.newAiGameButton;Gui.newGameButton]
             Gui.hideButtons [Gui.clearButton]
             //Gui.disableButtons [Gui.newGameButton;Gui.newAiGameButton]
-
 
             let! msg = q.Receive()
             match msg with

@@ -26,7 +26,7 @@ module Gui
       new Button(Location = Point(10,435), Size=Size(100,22),Text = "New AI Game")
 
     let clearButton =
-      new Button(Location = Point(10,410), Size=Size(100,47),Text = "Clear")  
+      new Button(Location = Point(10,410), Size=Size(100,47),Text = "Clear")
 
     let makeDrawButton =
       new Button(Location = Point(115,435), Size=Size(100,22),Text = "Draw!")
@@ -80,15 +80,15 @@ module Gui
         makeDrawButton.Enabled <- b
         chooseMatches.ReadOnly <- not b
 
-    let hideButtons bs = 
+    let hideButtons bs =
         printfn "Disabling Buttons."
-        for (b:Button) in bs do 
+        for (b:Button) in bs do
             b.Enabled  <- false
             b.Visible  <- false
 
-    let showButtons bs = 
+    let showButtons bs =
         printfn "Enabling Buttons"
-        for (b:Button) in bs do 
+        for (b:Button) in bs do
             b.Enabled  <- true
             b.Visible  <- true
 
@@ -158,7 +158,7 @@ module Gui
 
     mainWindow.Controls.Add radioButtonDiffMedium
     mainWindow.Controls.Add radioButtonDiffGodlike
-    mainWindow.Controls.Add radioButtonDiffEasy    
+    mainWindow.Controls.Add radioButtonDiffEasy
     mainWindow.Controls.Add radioButtonDiffHard
 
 
@@ -169,12 +169,12 @@ module Gui
      * fun type: System.EventArgs -> unit
      *)
     let newGameHandler _ =
-        AsyncEventQueue.instance.Post Types.NewGame
+        AsyncEventQueue.instance.Post NewGame
     newGameButton.Click.Add(newGameHandler)
 
 
     let newAiGameHandler _ =
-        AsyncEventQueue.instance.Post Types.NewAiGame
+        AsyncEventQueue.instance.Post NewAiGame
     newAiGameButton.Click.Add(newAiGameHandler)
 
     (* Define and add handlerFunction for newGameButton
@@ -186,10 +186,10 @@ module Gui
         printfn "Making draw with heap: %d, with %d matches." selectedHeap selectedNumMatches
 
         match selectedHeap,selectedNumMatches with
-            | -1,_       -> AsyncEventQueue.instance.Post Types.Error
-            | _,-1       -> AsyncEventQueue.instance.Post Types.Error
+            | -1,_       -> AsyncEventQueue.instance.Post Error
+            | _,-1       -> AsyncEventQueue.instance.Post Error
             | _,_        ->
-                AsyncEventQueue.instance.Post (Types.Move (selectedHeap, selectedNumMatches))
+                AsyncEventQueue.instance.Post (Move (selectedHeap, selectedNumMatches))
                 toggleDrawing false
                 selectedHeap <- 0
 
@@ -211,11 +211,11 @@ module Gui
 
     let clearHandler _ =
         printfn "Clearing"
-        AsyncEventQueue.instance.Post Types.Clear
+        AsyncEventQueue.instance.Post Clear
     clearButton.Click.Add clearHandler
 
     let downloadButtonHandler _ =
-        AsyncEventQueue.instance.Post (Types.Download (urlBox.Text))
+        AsyncEventQueue.instance.Post (Download (urlBox.Text))
     downloadButton.Click.Add downloadButtonHandler
 
 

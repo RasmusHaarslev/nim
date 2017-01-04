@@ -1,18 +1,18 @@
 module Types
-    
+
     type AiType =
         | None
         | Easy
         | Medium
         | Hard
         | Godlike
-        
+
     type Message =
         | Move of int*int
         | Error
         | SelectHeap of int
         | NewGame
-        | NewAiGame 
+        | NewAiGame
         | Clear
         | Download of string
 

@@ -1,6 +1,4 @@
 module Ai
-    #load "AsyncEventQueue.fsx"
-    open AsyncEventQueue
 
     (* Recursively xorbs all elements in the list heap
      * m = a0 ^^^ a1 ^^^ ... ^^^ ax
