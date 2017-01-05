@@ -250,7 +250,7 @@ module Gui
     let chooseMatchesHandler _ =
         selectedNumMatches <-
             try
-                if int chooseMatches.Text = 0
+                if int chooseMatches.Text <= 0
                 then
                     printfn "Choosing 0 matches is not allowed! Cheater!"
                     chooseMatches.Text <- "1"
